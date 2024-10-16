@@ -1,0 +1,46 @@
+.music-player {
+  position: fixed;
+  z-index: 2;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+.rhap_container {
+  background-color: #1b1b1b !important;
+  color: white;
+}
+
+.rhap_play-pause-button {
+  color: #ff6363 !important;
+}
+
+.rhap_play-pause-button:hover {
+  color: black !important;
+}
+
+.rhap_progress-filled {
+  background-color: #ff6363;
+}
+
+.rhap_progress-bar-show-download {
+  background-color: #ffffff;
+}
+
+.rhap_current-time,
+.rhap_total-time {
+  color: white;
+}
+
+.rhap_volume-button,
+.rhap_volume-bar {
+  color: white;
+}
+
+.rhap_main-controls-button {
+  color: white;
+}
+
+.rhap_track-info {
+  color: white;
+}
