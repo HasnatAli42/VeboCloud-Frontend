@@ -1,6 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../hooks/storeHooks';
-import { handleSetLoginModalOpen } from '../redux/actions/auth';
+import {
+  handleCreateUser,
+  handleSetLoginModalOpen,
+} from '../redux/actions/auth';
 import { useState } from 'react';
 
 interface FormData {
@@ -20,7 +23,8 @@ interface FormData {
 const SignUpModal = () => {
   const dispatch = useAppDispatch();
   const signUpModalOpen = useAppSelector((state) => state.auth.signUpModalOpen);
-
+  const users = useAppSelector((state) => state.auth.users);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState<FormData>({
     email: '',
     name: '',
@@ -49,11 +53,39 @@ const SignUpModal = () => {
       social_login: true,
       facebook_login: true,
       google_login: true,
-      twitter_login: true,
-      apple_login: true,
+      twitter_login: false,
+      apple_login: false,
       dob_signup: false,
       gender_signup: false,
     },
+  };
+  const handleSignUp = () => {
+    if (
+      !formData.email ||
+      !formData.name ||
+      !formData.password ||
+      !formData.passwordConfirmation
+    ) {
+      setError('Please fill in the required fields');
+      return;
+    }
+    if (formData.password !== formData.passwordConfirmation) {
+      setError('Passwords do not match');
+      return;
+    }
+    const existingUser = users.find((u) => u.email === formData.email);
+    if (existingUser) {
+      setError('User with email already exists');
+      return;
+    }
+    dispatch(
+      handleCreateUser({
+        name: formData.name,
+        password: formData.password,
+        id: `${Math.random()}`,
+        email: formData.email,
+      })
+    );
   };
   const { t } = useTranslation();
 
@@ -223,7 +255,7 @@ const SignUpModal = () => {
                       </label>
                       <div className='controls'>
                         <input
-                          className='signup-text'
+                          className='signup-text px-2'
                           id='signup-email'
                           name='email'
                           type='text'
@@ -238,7 +270,7 @@ const SignUpModal = () => {
                       </label>
                       <div className='controls'>
                         <input
-                          className='signup-text'
+                          className='signup-text px-2'
                           id='signup-fname'
                           name='name'
                           type='text'
@@ -258,7 +290,7 @@ const SignUpModal = () => {
                       </label>
                       <div className='controls'>
                         <input
-                          className='signup-text'
+                          className='signup-text px-2'
                           id='signup-password1'
                           name='password'
                           type='password'
@@ -276,7 +308,7 @@ const SignUpModal = () => {
                       </label>
                       <div className='controls'>
                         <input
-                          className='signup-text'
+                          className='signup-text px-2'
                           id='signup-password2'
                           name='passwordConfirmation'
                           type='password'
@@ -442,7 +474,7 @@ const SignUpModal = () => {
                   </div> */}
                 </div>
               </div>
-              <div className='lightbox-error error hide'></div>
+              {error && <div className='lightbox-error error'>{error}</div>}
               <div id='lightbox-login-form-goes-here'>
                 <div className='error hide'></div>
                 <div className='positive hide'>
@@ -453,6 +485,7 @@ const SignUpModal = () => {
             <div className='lightbox-footer'>
               <div className='right'>
                 <button
+                  onClick={() => handleSignUp()}
                   className='btn btn-primary submit'
                   data-translate-text='SIGN_IN'
                 >

@@ -3,23 +3,45 @@ import { useAppDispatch, useAppSelector } from '../hooks/storeHooks';
 import {
   handleSetLoginModalOpen,
   handleSetSignUpModalOpen,
+  handleSetUserAndLogin,
 } from '../redux/actions/auth';
+import { useState } from 'react';
 
 const LoginModal = () => {
   const dispatch = useAppDispatch();
   const isLoginModalOpen = useAppSelector((state) => state.auth.loginModalOpen);
-  const authorizationMethod = 0;
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+  const [error, setError] = useState('');
+  const users = useAppSelector((state) => state.auth.users);
   const config = {
     settings: {
       social_login: true,
       facebook_login: true,
       google_login: true,
-      twitter_login: true,
-      apple_login: true,
+      twitter_login: false,
+      apple_login: false,
     },
   };
   const { t } = useTranslation();
-
+  const handleLogin = () => {
+    if (!formData.email || !formData.password) {
+      setError('Please fill in the required fields');
+      return;
+    }
+    setError('');
+    const user = users.find(
+      (u) => u.email === formData.email && u.password === formData.password
+    );
+    if (user) {
+      dispatch(handleSetUserAndLogin(user));
+      setFormData({ email: '', password: '' });
+    } else {
+      setError('Wrong email or password');
+    }
+  };
   return isLoginModalOpen ? (
     <>
       <div id='lightbox-overlay'></div>
@@ -179,7 +201,7 @@ const LoginModal = () => {
                   </div>
                 </div>
               </div>
-              <div className='lightbox-error error hide'></div>
+              {error && <div className='lightbox-error error'>{error}</div>}
               <div id='lightbox-login-form-goes-here'>
                 <div className='error hide'></div>
                 <div className='positive hide'>
@@ -188,60 +210,37 @@ const LoginModal = () => {
                 <p id='login-msg'></p>
                 <form id='lightbox-login-form' className='vertical'>
                   <div className='row'>
-                    {authorizationMethod === 0 ? (
-                      <div className='control-group col-lg-6 col-12'>
-                        <label
-                          className='control-label'
-                          htmlFor='username'
-                          data-translate-text='FORM_USERNAME'
-                        >
-                          {t('FORM_USERNAME')}{' '}
-                        </label>
-                        <div className='controls'>
-                          <input
-                            className='login-text'
-                            id='login-username'
-                            name='username'
-                            type='text'
-                            autoCapitalize='none'
-                            autoCorrect='off'
-                          />
-                        </div>
-                        <a
-                          onClick={() =>
-                            dispatch(handleSetSignUpModalOpen(true))
+                    <div className='control-group col-lg-6 col-12'>
+                      <label
+                        className='control-label'
+                        htmlFor='email'
+                        data-translate-text='FORM_EMAIL'
+                      >
+                        {t('FORM_EMAIL')}{' '}
+                      </label>
+                      <div className='controls'>
+                        <input
+                          value={formData.email}
+                          className='login-text px-2'
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              email: e.target.value,
+                            })
                           }
-                          className='open-signup small desktop'
-                          data-translate-text='LB_SIGNUP_LOGIN_DONT_HAVE_ACCOUNT_SUB'
-                        >
-                          {t('LB_SIGNUP_LOGIN_DONT_HAVE_ACCOUNT_SUB')}{' '}
-                        </a>
+                          id='login-email'
+                          name='email'
+                          type='text'
+                        />
                       </div>
-                    ) : (
-                      <div className='control-group col-lg-6 col-12'>
-                        <label
-                          className='control-label'
-                          htmlFor='email'
-                          data-translate-text='FORM_EMAIL'
-                        >
-                          {t('FORM_EMAIL')}{' '}
-                        </label>
-                        <div className='controls'>
-                          <input
-                            className='login-text'
-                            id='login-email'
-                            name='email'
-                            type='text'
-                          />
-                        </div>
-                        <a
-                          className='open-signup small desktop'
-                          data-translate-text='LB_SIGNUP_LOGIN_DONT_HAVE_ACCOUNT_SUB'
-                        >
-                          {t('LB_SIGNUP_LOGIN_DONT_HAVE_ACCOUNT_SUB')}{' '}
-                        </a>
-                      </div>
-                    )}
+                      <a
+                        onClick={() => dispatch(handleSetSignUpModalOpen(true))}
+                        className='open-signup small desktop'
+                        data-translate-text='LB_SIGNUP_LOGIN_DONT_HAVE_ACCOUNT_SUB'
+                      >
+                        {t('LB_SIGNUP_LOGIN_DONT_HAVE_ACCOUNT_SUB')}{' '}
+                      </a>
+                    </div>
                     <div className='control-group col-lg-6 col-12'>
                       <label
                         className='control-label'
@@ -252,7 +251,14 @@ const LoginModal = () => {
                       </label>
                       <div className='controls'>
                         <input
-                          className='login-text'
+                          value={formData.password}
+                          className='login-text px-2'
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              password: e.target.value,
+                            })
+                          }
                           id='login-password'
                           name='password'
                           type='password'
@@ -272,6 +278,7 @@ const LoginModal = () => {
             <div className='lightbox-footer'>
               <div className='right'>
                 <button
+                  onClick={() => handleLogin()}
                   className='btn btn-primary submit'
                   data-translate-text='SIGN_IN'
                 >

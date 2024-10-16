@@ -1,7 +1,11 @@
 import {
+  addNewUser,
   setForgetPasswordModalOpen,
+  setLoggedIn,
+  setLoggedInUser,
   setLoginModalOpen,
   setSignUpModalOpen,
+  User,
 } from '../slices/authSlice';
 import { AppDispatch } from '../store/store';
 
@@ -18,5 +22,24 @@ export const handleSetSignUpModalOpen = (open: boolean) => {
 export const handleForgetPasswordModalOpen = (open: boolean) => {
   return (dispatch: AppDispatch) => {
     dispatch(setForgetPasswordModalOpen(open));
+  };
+};
+export const handleCreateUser = (user: User) => {
+  return (dispatch: AppDispatch) => {
+    dispatch(addNewUser(user));
+    dispatch(handleSetLoginModalOpen(true));
+  };
+};
+export const handleSetUserAndLogin = (user: User) => {
+  return (dispatch: AppDispatch) => {
+    dispatch(handleSetSignUpModalOpen(false));
+    dispatch(setLoggedInUser(user));
+    dispatch(setLoggedIn(true));
+  };
+};
+export const handleLogout = () => {
+  return (dispatch: AppDispatch) => {
+    dispatch(setLoggedInUser(undefined));
+    dispatch(setLoggedIn(false));
   };
 };

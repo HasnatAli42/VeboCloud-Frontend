@@ -1,11 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
+export interface User {
+  name: string;
+  password: string;
+  email: string;
+  id: string;
+}
 export interface Auth {
   loginModalOpen: boolean;
   signUpModalOpen: boolean;
   forgetPasswordModalOpen: boolean;
   loggedIn: boolean;
-  userEmail: string;
+  loggedInUser: User | undefined;
+  users: User[];
 }
 
 const initialState: Auth = {
@@ -13,7 +19,15 @@ const initialState: Auth = {
   forgetPasswordModalOpen: false,
   signUpModalOpen: false,
   loggedIn: false,
-  userEmail: '',
+  loggedInUser: undefined,
+  users: [
+    {
+      name: 'Test User',
+      email: 'user@gmail.com',
+      password: '12345678',
+      id: '1',
+    },
+  ],
 };
 
 export const authSlice = createSlice({
@@ -38,18 +52,22 @@ export const authSlice = createSlice({
       state.signUpModalOpen = false;
       state.loginModalOpen = false;
     },
-    setUserEmail: (state, action: PayloadAction<string>) => {
-      state.userEmail = action.payload;
+    setLoggedInUser: (state, action: PayloadAction<User | undefined>) => {
+      state.loggedInUser = action.payload;
+    },
+    addNewUser: (state, action: PayloadAction<User>) => {
+      state.users = [...state.users, action.payload];
     },
   },
 });
 
 export const {
   setLoggedIn,
-  setUserEmail,
+  setLoggedInUser,
+  addNewUser,
   setLoginModalOpen,
   setSignUpModalOpen,
-  setForgetPasswordModalOpen
+  setForgetPasswordModalOpen,
 } = authSlice.actions;
 
 export default authSlice.reducer;
