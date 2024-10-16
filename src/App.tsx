@@ -1,5 +1,6 @@
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './css/App.css';
+import './css/dashboard.css';
 import './css/beats.css';
 import './css/bootstrap.css';
 import './css/cart.css';
@@ -19,20 +20,32 @@ import { Provider } from 'react-redux';
 import LoginModal from './components/loginModal';
 import { store } from './redux/store/store';
 import SignUpModal from './components/signUpModal';
+import DashboardPage from './pages/dashboard';
+import { useAppSelector } from './hooks/storeHooks';
+
+function AppWithRoutes() {
+  const loggedInUser = useAppSelector((state) => state.auth.loggedInUser);
+  return (
+    <Router>
+      <div>
+        <Navbar />
+        <LoginModal />
+        <SignUpModal />
+        <Routes>
+          <Route
+            path='/'
+            element={loggedInUser?.email ? <DashboardPage /> : <Home />}
+          />
+        </Routes>
+      </div>
+    </Router>
+  );
+}
 
 function App() {
   return (
     <Provider store={store}>
-      <Router>
-        <div>
-          <Navbar />
-          <LoginModal />
-          <SignUpModal />
-          <Routes>
-            <Route path='/' element={<Home />} />
-          </Routes>
-        </div>
-      </Router>
+      <AppWithRoutes />
     </Provider>
   );
 }

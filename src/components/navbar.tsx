@@ -1,12 +1,14 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { useAppDispatch } from '../hooks/storeHooks';
+import { useAppDispatch, useAppSelector } from '../hooks/storeHooks';
 import {
+  handleLogout,
   handleSetLoginModalOpen,
   handleSetSignUpModalOpen,
 } from '../redux/actions/auth';
 
 const Header = () => {
+  const loggedInUser = useAppSelector((state) => state.auth.loggedInUser);
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   return (
@@ -54,23 +56,36 @@ const Header = () => {
               <span className='caret'></span>
             </a>
           </div>
-          <a
-            id='header-login-btn'
-            onClick={() => dispatch(handleSetLoginModalOpen(true))}
-            className='login'
-            data-translate-text='SIGN_IN'
-          >
-            {t('SIGN_IN')}
-          </a>
-
-          <a
-            id='header-signup-btn'
-            className='create-account'
-            data-translate-text='BECOME_A_MEMBER'
-            onClick={() => dispatch(handleSetSignUpModalOpen(true))}
-          >
-            {t('BECOME_A_MEMBER')}
-          </a>
+          {loggedInUser === undefined ? (
+            <>
+              {' '}
+              <a
+                id='header-login-btn'
+                onClick={() => dispatch(handleSetLoginModalOpen(true))}
+                className='login'
+                data-translate-text='SIGN_IN'
+              >
+                {t('SIGN_IN')}
+              </a>
+              <a
+                id='header-signup-btn'
+                className='create-account'
+                data-translate-text='BECOME_A_MEMBER'
+                onClick={() => dispatch(handleSetSignUpModalOpen(true))}
+              >
+                {t('BECOME_A_MEMBER')}
+              </a>
+            </>
+          ) : (
+            <a
+              id='header-login-btn'
+              onClick={() => dispatch(handleLogout())}
+              className='login'
+              data-translate-text='SIGN_OUT'
+            >
+              {t('SIGN_OUT')}
+            </a>
+          )}
 
           <div id='account-buttons' className='user-asset'>
             <div className='btn-group no-border-left'>
