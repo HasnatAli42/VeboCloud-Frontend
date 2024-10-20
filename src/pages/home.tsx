@@ -13,9 +13,11 @@ const LandingHero = () => {
   const { t } = useTranslation();
   const { user, isAuthenticated } = useAuth();
 
-  const isDefaultUserGroup =
-    user?.group?.role_id ===
-      Number(import.meta.env.REACT_APP_DEFAULT_USER_GROUP) || false;
+  // const isDefaultUserGroup =
+  //   user?.group?.role_id ===
+  //     Number(import.meta.env.REACT_APP_DEFAULT_USER_GROUP) || false;
+
+    const isDefaultUserGroup = user || false;
 
   return (
     <div id='landing-hero' className='p-0'>
