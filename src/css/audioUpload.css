@@ -1,0 +1,56 @@
+.audio-upload-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.audio-upload-container h2 {
+  font-size: 1.8rem;
+  margin: 10px 0px;
+  font-weight: 700;
+}
+
+p {
+  font-size: 0.9rem;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.audio-upload-dropzone {
+  border: 2px dashed #ff4d69;
+  padding: 3rem;
+  border-radius: 8px;
+  position: relative;
+  background-color: #333;
+}
+
+.audio-upload-dropzone:hover {
+  background-color: #000;
+}
+
+.audio-upload-icon {
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.choose-file-btn {
+  margin-top: 1.5rem;
+  background-color: #ff4d69;
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.choose-file-btn:hover {
+  background-color: #ff6d85;
+}
+
+.file-name {
+  margin-top: 1rem;
+  color: #333;
+  font-size: 0.85rem;
+}

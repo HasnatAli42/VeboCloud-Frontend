@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './css/App.css';
 import './css/dashboard.css';
+import './css/uploadMusic.css';
+import './css/audioUpload.css';
 import './css/beats.css';
 import './css/bootstrap.css';
 import './css/cart.css';

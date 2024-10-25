@@ -6,6 +6,8 @@ import {
   handleSetUserAndLogin,
 } from '../redux/actions/auth';
 import { useState } from 'react';
+import axios from 'axios';
+import { environment } from '../environment/environment';
 
 const LoginModal = () => {
   const dispatch = useAppDispatch();
@@ -15,7 +17,6 @@ const LoginModal = () => {
     password: '',
   });
   const [error, setError] = useState('');
-  const users = useAppSelector((state) => state.auth.users);
   const config = {
     settings: {
       social_login: true,
@@ -26,17 +27,48 @@ const LoginModal = () => {
     },
   };
   const { t } = useTranslation();
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!formData.email || !formData.password) {
       setError('Please fill in the required fields');
       return;
     }
     setError('');
-    const user = users.find(
-      (u) => u.email === formData.email && u.password === formData.password
+    const response = await axios.post(
+      environment.VITE_BACKEND_URL + '/login/',
+      {
+        ...formData,
+      }
     );
-    if (user) {
-      dispatch(handleSetUserAndLogin(user));
+    if (response.data?.data) {
+      const {
+        first_name,
+        last_name,
+        refresh_token,
+        access_token,
+        image,
+        email,
+        id,
+      } = response.data.data as {
+        first_name: string;
+        last_name: string;
+        refresh_token: string;
+        access_token: string;
+        image: string;
+        email: string;
+        id: string;
+      };
+
+      dispatch(
+        handleSetUserAndLogin({
+          first_name,
+          last_name,
+          refresh_token,
+          access_token,
+          image,
+          email,
+          id,
+        })
+      );
       setFormData({ email: '', password: '' });
     } else {
       setError('Wrong email or password');

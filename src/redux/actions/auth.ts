@@ -1,5 +1,4 @@
 import {
-  addNewUser,
   setForgetPasswordModalOpen,
   setLoggedIn,
   setLoggedInUser,
@@ -26,7 +25,6 @@ export const handleForgetPasswordModalOpen = (open: boolean) => {
 };
 export const handleCreateUser = (user: User) => {
   return (dispatch: AppDispatch) => {
-    dispatch(addNewUser(user));
     dispatch(handleSetLoginModalOpen(true));
   };
 };

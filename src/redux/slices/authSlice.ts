@@ -1,7 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export interface User {
-  name: string;
-  password: string;
+  first_name: string;
+  last_name: string;
+  refresh_token: string;
+  access_token: string;
+  image: string;
   email: string;
   id: string;
 }
@@ -11,7 +14,6 @@ export interface Auth {
   forgetPasswordModalOpen: boolean;
   loggedIn: boolean;
   loggedInUser: User | undefined;
-  users: User[];
 }
 
 const initialState: Auth = {
@@ -20,14 +22,6 @@ const initialState: Auth = {
   signUpModalOpen: false,
   loggedIn: false,
   loggedInUser: undefined,
-  users: [
-    {
-      name: 'Test User',
-      email: 'user@gmail.com',
-      password: '12345678',
-      id: '1',
-    },
-  ],
 };
 
 export const authSlice = createSlice({
@@ -55,16 +49,12 @@ export const authSlice = createSlice({
     setLoggedInUser: (state, action: PayloadAction<User | undefined>) => {
       state.loggedInUser = action.payload;
     },
-    addNewUser: (state, action: PayloadAction<User>) => {
-      state.users = [...state.users, action.payload];
-    },
   },
 });
 
 export const {
   setLoggedIn,
   setLoggedInUser,
-  addNewUser,
   setLoginModalOpen,
   setSignUpModalOpen,
   setForgetPasswordModalOpen,
