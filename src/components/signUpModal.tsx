@@ -1,9 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../hooks/storeHooks';
-import {
-  handleCreateUser,
-  handleSetLoginModalOpen,
-} from '../redux/actions/auth';
+import { handleSetLoginModalOpen } from '../redux/actions/auth';
 import { useState } from 'react';
 
 interface FormData {
@@ -23,7 +20,6 @@ interface FormData {
 const SignUpModal = () => {
   const dispatch = useAppDispatch();
   const signUpModalOpen = useAppSelector((state) => state.auth.signUpModalOpen);
-  const users = useAppSelector((state) => state.auth.users);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState<FormData>({
     email: '',
@@ -73,19 +69,6 @@ const SignUpModal = () => {
       setError('Passwords do not match');
       return;
     }
-    const existingUser = users.find((u) => u.email === formData.email);
-    if (existingUser) {
-      setError('User with email already exists');
-      return;
-    }
-    dispatch(
-      handleCreateUser({
-        name: formData.name,
-        password: formData.password,
-        id: `${Math.random()}`,
-        email: formData.email,
-      })
-    );
   };
   const { t } = useTranslation();
 
