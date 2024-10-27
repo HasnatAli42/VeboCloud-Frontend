@@ -2,48 +2,19 @@ import React, { useState } from 'react';
 import MusicPlayer from './musicPlayer';
 import testAudio from '../assets/testAudio.mp3';
 import MusicCard from './musicCard';
+import UploadMusic from '../pages/uploadMusic';
+import Sidebar from './sideBar';
 
 const Dashboard: React.FC = () => {
   return (
     <div className='dashboard'>
-      <Sidebar />
       <MainContent />
     </div>
   );
 };
 
-const Sidebar: React.FC = () => (
-  <div className='sidebar'>
-    <h2>Discover</h2>
-    <nav>
-      <ul>
-        <li>Listen Now</li>
-        <li>Browse</li>
-        <li>Radio</li>
-      </ul>
-    </nav>
-    <h3>Library</h3>
-    <ul>
-      <li>Playlists</li>
-      <li>Songs</li>
-      <li>Made for You</li>
-      <li>Artists</li>
-      <li>Albums</li>
-    </ul>
-    <h3>Playlists</h3>
-    <ul>
-      <li>Recently Added</li>
-      <li>Recently Played</li>
-      <li>Top Songs</li>
-      <li>Top Albums</li>
-      <li>Top Artists</li>
-      <li>Logic Discography</li>
-      <li>Bedtime Beats</li>
-    </ul>
-  </div>
-);
-
 const MainContent: React.FC = () => {
+  const [uploadMusic, setUploadMusic] = useState(false);
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
   const handleCardClick = (audioSrc: string) => {
     setPlayingAudio(null);
@@ -129,50 +100,65 @@ const MainContent: React.FC = () => {
 
   return (
     <>
+      <Sidebar uploadMusic={uploadMusic} goBack={() => setUploadMusic(false)} />
       <div className='main-content'>
         <div className='top-bar'>
-          <div className='tabs'>
-            <button>Music</button>
-            <button>Podcasts</button>
-            <button>Live</button>
-          </div>
-          <button className='add-music'>+ Add music</button>
+          {!uploadMusic && (
+            <div className='tabs'>
+              <button>Music</button>
+              <button>Podcasts</button>
+              <button>Live</button>
+            </div>
+          )}
+          {!uploadMusic && (
+            <button className='add-music' onClick={() => setUploadMusic(true)}>
+              + Add music
+            </button>
+          )}
         </div>
-        <section>
-          <h2>Listen Now</h2>
-          <p>Top picks for you. Updated daily.</p>
-          <div className='cards'>
-            {cardsData.map((card) => (
-              <MusicCard
-                key={card.id}
-                id={card.id}
-                title={card.title}
-                author={card.author}
-                imgSrc={card.imgSrc}
-                audioSrc={testAudio}
-                onCardClick={handleCardClick}
-              />
-            ))}
-          </div>
-        </section>
-        <section>
-          <h2>Made for You</h2>
-          <p>Your personal playlists. Updated daily.</p>
-          <div className='cards'>
-            {smallCardsData.map((card) => (
-              <MusicCard
-                key={card.id}
-                id={card.id}
-                smallCard
-                title={card.title}
-                author={card.author}
-                imgSrc={card.imgSrc}
-                audioSrc={testAudio}
-                onCardClick={handleCardClick}
-              />
-            ))}
-          </div>
-        </section>
+        {uploadMusic ? (
+          <section>
+            <UploadMusic />
+          </section>
+        ) : (
+          <>
+            <section>
+              <h2>Listen Now</h2>
+              <p>Top picks for you. Updated daily.</p>
+              <div className='cards'>
+                {cardsData.map((card) => (
+                  <MusicCard
+                    key={card.id}
+                    id={card.id}
+                    title={card.title}
+                    author={card.author}
+                    imgSrc={card.imgSrc}
+                    audioSrc={testAudio}
+                    onCardClick={handleCardClick}
+                  />
+                ))}
+              </div>
+            </section>
+            <section>
+              <h2>Made for You</h2>
+              <p>Your personal playlists. Updated daily.</p>
+              <div className='cards'>
+                {smallCardsData.map((card) => (
+                  <MusicCard
+                    key={card.id}
+                    id={card.id}
+                    smallCard
+                    title={card.title}
+                    author={card.author}
+                    imgSrc={card.imgSrc}
+                    audioSrc={testAudio}
+                    onCardClick={handleCardClick}
+                  />
+                ))}
+              </div>
+            </section>
+          </>
+        )}
       </div>
       {playingAudio && <MusicPlayer audioSrc={playingAudio} />}{' '}
     </>
