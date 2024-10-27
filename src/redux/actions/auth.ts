@@ -23,7 +23,7 @@ export const handleForgetPasswordModalOpen = (open: boolean) => {
     dispatch(setForgetPasswordModalOpen(open));
   };
 };
-export const handleCreateUser = (user: User) => {
+export const handleCreateUser = () => {
   return (dispatch: AppDispatch) => {
     dispatch(handleSetLoginModalOpen(true));
   };
