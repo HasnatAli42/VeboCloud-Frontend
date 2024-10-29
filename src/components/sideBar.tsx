@@ -1,23 +1,34 @@
-interface props {
-  uploadMusic: boolean;
-  goBack: () => void;
-}
-const Sidebar = ({ uploadMusic, goBack }: props) => (
-  <div className='sidebar'>
-    {uploadMusic ? (
-      <ul>
-        <li onClick={goBack}>Go Back</li>
-      </ul>
-    ) : (
+import { useLocation, useNavigate } from 'react-router-dom';
+
+const Sidebar = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const getActiveClass = (pathname: string) =>
+    pathname === location.pathname ? 'active' : '';
+
+  return (
+    <div className='sidebar'>
       <>
         <h2>Discover</h2>
         <nav>
           <ul>
-            <li>Listen Now</li>
+            <li className={getActiveClass('/')} onClick={() => navigate('/')}>
+              Listen Now
+            </li>
             <li>Browse</li>
             <li>Radio</li>
           </ul>
         </nav>
+        <h3>Upload</h3>
+        <ul>
+          <li
+            className={getActiveClass('/upload')}
+            onClick={() => navigate('/upload')}
+          >
+            Upload Music
+          </li>
+        </ul>
         <h3>Library</h3>
         <ul>
           <li>Playlists</li>
@@ -37,7 +48,7 @@ const Sidebar = ({ uploadMusic, goBack }: props) => (
           <li>Bedtime Beats</li>
         </ul>
       </>
-    )}
-  </div>
-);
+    </div>
+  );
+};
 export default Sidebar;

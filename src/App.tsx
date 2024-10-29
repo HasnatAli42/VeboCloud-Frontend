@@ -3,17 +3,7 @@ import './css/App.css';
 import './css/dashboard.css';
 import './css/uploadMusic.css';
 import './css/audioUpload.css';
-import './css/beats.css';
 import './css/bootstrap.css';
-import './css/cart.css';
-import './css/comments.css';
-import './css/custom.css';
-import './css/jquery-contextmenu.css';
-import './css/jqueryui.css';
-import './css/loading.css';
-import './css/reaction.css';
-import './css/select2.css';
-import './css/swiper.css';
 import './css/theme.css';
 import './i18n';
 import Home from './pages/home';
@@ -28,6 +18,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useEffect } from 'react';
 import { handleStatesOnRefresh } from './redux/actions/auth';
 import { environment } from './environment/environment';
+import UploadMusic from './pages/uploadMusic';
 
 function AppWithRoutes() {
   const loggedInUser = useAppSelector((state) => state.auth.loggedInUser);
@@ -45,6 +36,10 @@ function AppWithRoutes() {
           <Route
             path='/'
             element={loggedInUser?.email ? <DashboardPage /> : <Home />}
+          />
+           <Route
+            path='/upload'
+            element={loggedInUser?.email ? <UploadMusic /> : <Home />}
           />
         </Routes>
       </div>

@@ -2,8 +2,9 @@ import React, { useState, useRef } from 'react';
 import AudioUpload from '../components/audioUpload';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import Sidebar from '../components/sideBar';
 
-const UploadMusic: React.FC = () => {
+const UploadComponent: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [trackTitle, setTrackTitle] = useState('');
@@ -59,7 +60,11 @@ const UploadMusic: React.FC = () => {
           <form className='track-form' onSubmit={handleSubmit}>
             <h3>
               File Selected: {file.name}{' '}
-              <FontAwesomeIcon onClick={()=>setFile(null)} className='edit-icon' icon={faEdit} />
+              <FontAwesomeIcon
+                onClick={() => setFile(null)}
+                className='edit-icon'
+                icon={faEdit}
+              />
             </h3>
 
             <label htmlFor='track-title'>Track Title *</label>
@@ -150,6 +155,28 @@ const UploadMusic: React.FC = () => {
         </div>
       )}
     </div>
+  );
+};
+
+const UploadMusic: React.FC = () => {
+  return (
+    <div className='dashboard'>
+      <MainContent />
+    </div>
+  );
+};
+
+const MainContent: React.FC = () => {
+
+  return (
+    <>
+      <Sidebar />
+      <div className='main-content'>
+        <section>
+          <UploadComponent />
+        </section>
+      </div>
+    </>
   );
 };
 

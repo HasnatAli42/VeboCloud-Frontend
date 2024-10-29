@@ -40,7 +40,9 @@
 .sidebar ul li:hover {
   color: #ff4d69;
 }
-
+.sidebar ul li.active {
+  color: #ff889a;
+}
 .main-content {
   flex: 1;
   padding: 40px 20px;

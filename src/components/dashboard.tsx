@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import MusicPlayer from './musicPlayer';
 import MusicCard from './musicCard';
-import UploadMusic from '../pages/uploadMusic';
 import Sidebar from './sideBar';
 import axios from 'axios';
 import { environment } from '../environment/environment';
+import { useNavigate } from 'react-router-dom';
 interface song {
   id: number;
   title: string;
@@ -42,6 +42,7 @@ const Dashboard: React.FC = () => {
 };
 
 const MainContent: React.FC = () => {
+  const navigate = useNavigate();
   const [uploadMusic, setUploadMusic] = useState(false);
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
   const [songs, setSongs] = useState<song[]>([]);
@@ -59,71 +60,63 @@ const MainContent: React.FC = () => {
   };
   return (
     <>
-      <Sidebar uploadMusic={uploadMusic} goBack={() => setUploadMusic(false)} />
+      <Sidebar />
       <div className='main-content'>
         <div className='top-bar'>
-          {!uploadMusic && (
-            <div className='tabs'>
-              <button>Music</button>
-              <button>Podcasts</button>
-              <button>Live</button>
-            </div>
-          )}
-          {!uploadMusic && (
-            <button className='add-music' onClick={() => setUploadMusic(true)}>
-              + Add music
-            </button>
-          )}
+          <div className='tabs'>
+            <button>Music</button>
+            <button>Podcasts</button>
+            <button>Live</button>
+          </div>
+
+          <button className='add-music' onClick={() => navigate('/upload')}>
+            + Add music
+          </button>
         </div>
-        {uploadMusic ? (
+
+        <>
           <section>
-            <UploadMusic />
+            <h2>Listen Now</h2>
+            <p>Top picks for you. Updated daily.</p>
+            <div className='cards'>
+              {songs.map((song) => (
+                <MusicCard
+                  key={song.id}
+                  id={song.id}
+                  title={song.title}
+                  author={song.artist?.bio || ''}
+                  imgSrc={
+                    song.artist?.profile_picture ||
+                    'https://png.pngtree.com/thumb_back/fh260/background/20230612/pngtree-pair-of-headphones-on-the-water-at-nighttime-image_2931863.jpg'
+                  }
+                  audioSrc={song.file}
+                  onCardClick={handleCardClick}
+                />
+              ))}
+            </div>
           </section>
-        ) : (
-          <>
-            <section>
-              <h2>Listen Now</h2>
-              <p>Top picks for you. Updated daily.</p>
-              <div className='cards'>
-                {songs.map((song) => (
-                  <MusicCard
-                    key={song.id}
-                    id={song.id}
-                    title={song.title}
-                    author={song.artist?.bio || ''}
-                    imgSrc={
-                      song.artist?.profile_picture ||
-                      'https://png.pngtree.com/thumb_back/fh260/background/20230612/pngtree-pair-of-headphones-on-the-water-at-nighttime-image_2931863.jpg'
-                    }
-                    audioSrc={song.file}
-                    onCardClick={handleCardClick}
-                  />
-                ))}
-              </div>
-            </section>
-            <section>
-              <h2>Made for You</h2>
-              <p>Your personal playlists. Updated daily.</p>
-              <div className='cards'>
-                {songs.map((song) => (
-                  <MusicCard
-                    key={song.id}
-                    id={song.id}
-                    title={song.title}
-                    author={song.artist?.bio || ''}
-                    imgSrc={
-                      song.artist?.profile_picture ||
-                      'https://png.pngtree.com/thumb_back/fh260/background/20230612/pngtree-pair-of-headphones-on-the-water-at-nighttime-image_2931863.jpg'
-                    }
-                    audioSrc={song.file}
-                    onCardClick={handleCardClick}
-                    smallCard
-                  />
-                ))}
-              </div>
-            </section>
-          </>
-        )}
+          <section>
+            <h2>Made for You</h2>
+            <p>Your personal playlists. Updated daily.</p>
+            <div className='cards'>
+              {songs.map((song) => (
+                <MusicCard
+                  key={song.id}
+                  id={song.id}
+                  title={song.title}
+                  author={song.artist?.bio || ''}
+                  imgSrc={
+                    song.artist?.profile_picture ||
+                    'https://png.pngtree.com/thumb_back/fh260/background/20230612/pngtree-pair-of-headphones-on-the-water-at-nighttime-image_2931863.jpg'
+                  }
+                  audioSrc={song.file}
+                  onCardClick={handleCardClick}
+                  smallCard
+                />
+              ))}
+            </div>
+          </section>
+        </>
       </div>
       {playingAudio && <MusicPlayer audioSrc={playingAudio} />}{' '}
     </>
