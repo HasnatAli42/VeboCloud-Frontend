@@ -23,10 +23,18 @@ import LoginModal from './components/loginModal';
 import { store } from './redux/store/store';
 import SignUpModal from './components/signUpModal';
 import DashboardPage from './pages/dashboard';
-import { useAppSelector } from './hooks/storeHooks';
+import { useAppDispatch, useAppSelector } from './hooks/storeHooks';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { useEffect } from 'react';
+import { handleStatesOnRefresh } from './redux/actions/auth';
+import { environment } from './environment/environment';
 
 function AppWithRoutes() {
   const loggedInUser = useAppSelector((state) => state.auth.loggedInUser);
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(handleStatesOnRefresh());
+  }, []);
   return (
     <Router>
       <div>
@@ -46,9 +54,11 @@ function AppWithRoutes() {
 
 function App() {
   return (
-    <Provider store={store}>
-      <AppWithRoutes />
-    </Provider>
+    <GoogleOAuthProvider clientId={environment.VITE_GOOGLE_CLIENT_ID}>
+      <Provider store={store}>
+        <AppWithRoutes />
+      </Provider>
+    </GoogleOAuthProvider>
   );
 }
 

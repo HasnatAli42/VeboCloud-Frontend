@@ -1,10 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import MusicPlayer from './musicPlayer';
-import testAudio from '../assets/testAudio.mp3';
 import MusicCard from './musicCard';
 import UploadMusic from '../pages/uploadMusic';
 import Sidebar from './sideBar';
-
+import axios from 'axios';
+import { environment } from '../environment/environment';
+interface song {
+  id: number;
+  title: string;
+  artist?: {
+    id: number;
+    user: {
+      id: number;
+      email: string;
+    };
+    bio: string;
+    profile_picture: string;
+    social_media_links: string;
+    verified: boolean;
+  };
+  album?: {
+    id: number;
+    title: string;
+    release_date: string;
+    cover_art: string;
+  };
+  genre?: {
+    name: string;
+    description: string;
+  };
+  upload_date: string;
+  file: string;
+  length: string;
+}
 const Dashboard: React.FC = () => {
   return (
     <div className='dashboard'>
@@ -16,88 +44,19 @@ const Dashboard: React.FC = () => {
 const MainContent: React.FC = () => {
   const [uploadMusic, setUploadMusic] = useState(false);
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
+  const [songs, setSongs] = useState<song[]>([]);
+  useEffect(() => {
+    axios.get(environment.VITE_BACKEND_URL + '/songs/').then((response) => {
+      setSongs(response.data.data);
+    });
+  }, []);
+
   const handleCardClick = (audioSrc: string) => {
     setPlayingAudio(null);
     setTimeout(() => {
       setPlayingAudio(audioSrc);
     }, 1000);
   };
-  const cardsData = [
-    {
-      id: '1',
-      title: 'React Rendezvous',
-      author: 'Ethan Byte',
-      imgSrc:
-        'https://ui.shadcn.com/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1611348586804-61bf6c080437%3Fw%3D300%26dpr%3D2%26q%3D80&w=640&q=75',
-    },
-    {
-      id: '2',
-      title: 'Async Awakenings',
-      author: 'Nina Netcode',
-      imgSrc:
-        'https://ui.shadcn.com/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1468817814611-b7edf94b5d60%3Fw%3D300%26dpr%3D2%26q%3D80&w=640&q=75',
-    },
-    {
-      id: '3',
-      title: 'The Art of Reusability',
-      author: 'Lena Logic',
-      imgSrc:
-        'https://ui.shadcn.com/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1528143358888-6d3c7f67bd5d%3Fw%3D300%26dpr%3D2%26q%3D80&w=640&q=75',
-    },
-    {
-      id: '4',
-      title: 'Stateful Symphony',
-      author: 'Beth Binary',
-      imgSrc:
-        'https://ui.shadcn.com/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1490300472339-79e4adc6be4a%3Fw%3D300%26dpr%3D2%26q%3D80&w=640&q=75',
-    },
-  ];
-
-  const smallCardsData = [
-    {
-      id: '5',
-      title: 'Thinking Components',
-      author: 'Lena Logic',
-      imgSrc:
-        'https://ui.shadcn.com/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1490300472339-79e4adc6be4a%3Fw%3D300%26dpr%3D2%26q%3D80&w=640&q=75',
-    },
-    {
-      id: '6',
-      title: 'Functional Fury',
-      author: 'Beth Binary',
-      imgSrc:
-        'https://ui.shadcn.com/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1528143358888-6d3c7f67bd5d%3Fw%3D300%26dpr%3D2%26q%3D80&w=640&q=75',
-    },
-    {
-      id: '7',
-      title: 'React Rendezvous',
-      author: 'Ethan Byte',
-      imgSrc:
-        'https://ui.shadcn.com/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1468817814611-b7edf94b5d60%3Fw%3D300%26dpr%3D2%26q%3D80&w=640&q=75',
-    },
-    {
-      id: '8',
-      title: 'Stateful Symphony',
-      author: 'Beth Binary',
-      imgSrc:
-        'https://ui.shadcn.com/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1611348586804-61bf6c080437%3Fw%3D300%26dpr%3D2%26q%3D80&w=640&q=75',
-    },
-    {
-      id: '9',
-      title: 'Async Awakenings',
-      author: 'Nina Netcode',
-      imgSrc:
-        'https://ui.shadcn.com/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1611348586804-61bf6c080437%3Fw%3D300%26dpr%3D2%26q%3D80&w=640&q=75',
-    },
-    {
-      id: '10',
-      title: 'The Art of Reusability',
-      author: 'Lena Logic',
-      imgSrc:
-        'https://ui.shadcn.com/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1468817814611-b7edf94b5d60%3Fw%3D300%26dpr%3D2%26q%3D80&w=640&q=75',
-    },
-  ];
-
   return (
     <>
       <Sidebar uploadMusic={uploadMusic} goBack={() => setUploadMusic(false)} />
@@ -126,14 +85,17 @@ const MainContent: React.FC = () => {
               <h2>Listen Now</h2>
               <p>Top picks for you. Updated daily.</p>
               <div className='cards'>
-                {cardsData.map((card) => (
+                {songs.map((song) => (
                   <MusicCard
-                    key={card.id}
-                    id={card.id}
-                    title={card.title}
-                    author={card.author}
-                    imgSrc={card.imgSrc}
-                    audioSrc={testAudio}
+                    key={song.id}
+                    id={song.id}
+                    title={song.title}
+                    author={song.artist?.bio || ''}
+                    imgSrc={
+                      song.artist?.profile_picture ||
+                      'https://png.pngtree.com/thumb_back/fh260/background/20230612/pngtree-pair-of-headphones-on-the-water-at-nighttime-image_2931863.jpg'
+                    }
+                    audioSrc={song.file}
                     onCardClick={handleCardClick}
                   />
                 ))}
@@ -143,16 +105,19 @@ const MainContent: React.FC = () => {
               <h2>Made for You</h2>
               <p>Your personal playlists. Updated daily.</p>
               <div className='cards'>
-                {smallCardsData.map((card) => (
+                {songs.map((song) => (
                   <MusicCard
-                    key={card.id}
-                    id={card.id}
-                    smallCard
-                    title={card.title}
-                    author={card.author}
-                    imgSrc={card.imgSrc}
-                    audioSrc={testAudio}
+                    key={song.id}
+                    id={song.id}
+                    title={song.title}
+                    author={song.artist?.bio || ''}
+                    imgSrc={
+                      song.artist?.profile_picture ||
+                      'https://png.pngtree.com/thumb_back/fh260/background/20230612/pngtree-pair-of-headphones-on-the-water-at-nighttime-image_2931863.jpg'
+                    }
+                    audioSrc={song.file}
                     onCardClick={handleCardClick}
+                    smallCard
                   />
                 ))}
               </div>

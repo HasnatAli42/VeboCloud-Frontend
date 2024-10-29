@@ -1,16 +1,50 @@
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../hooks/storeHooks';
 import {
   handleLogout,
   handleSetLoginModalOpen,
   handleSetSignUpModalOpen,
 } from '../redux/actions/auth';
+import { useEffect } from 'react';
+import axios from 'axios';
+import { environment } from '../environment/environment';
+import {
+  setLoginModalMessage,
+  setLoginModalOpen,
+} from '../redux/slices/authSlice';
 
 const Header = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    if (location.search) {
+      const uid = location.search.split('uid=')?.[1]?.split('&token=')?.[0];
+      const token = location.search.split('uid=')?.[1]?.split('&token=')?.[1];
+      if (uid && token) {
+        axios
+          .get(
+            environment.VITE_BACKEND_URL +
+              `/verify-email/activate/${uid}/${token}/`
+          )
+          .then((response) => {
+            if (response.data.message === 'Email verification successful') {
+              dispatch(setLoginModalOpen(true));
+              dispatch(
+                setLoginModalMessage('Email Verified, Please login to continue')
+              );
+            }
+          })
+          .catch(() => {
+            dispatch(setLoginModalOpen(false));
+            navigate('/');
+          });
+      }
+    }
+  }, []);
   const loggedInUser = useAppSelector((state) => state.auth.loggedInUser);
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
   return (
     <>
       <div id='header-container'>

@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay, faHeart } from '@fortawesome/free-solid-svg-icons';
 
 interface CardProps {
-  id: string;
+  id: number;
   title: string;
   author: string;
   imgSrc: string;

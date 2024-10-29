@@ -6,11 +6,36 @@ import {
   handleSetUserAndLogin,
 } from '../redux/actions/auth';
 import { useState } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { environment } from '../environment/environment';
+import { setLoginModalMessage } from '../redux/slices/authSlice';
+import { useGoogleLogin } from '@react-oauth/google';
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 
 const LoginModal = () => {
+  const responseFacebook = (response: any) => {
+    console.log(response);
+  };
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      const response = await axios.post(
+        environment.VITE_BACKEND_URL + '/social-login/',
+        {
+          provider: 'google',
+          access_token: tokenResponse.access_token,
+        }
+      );
+    },
+    onError: () => {
+      console.log('Login Failed');
+    },
+  });
+
   const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState(false);
+  const defaultMessage = useAppSelector(
+    (state) => state.auth.loginModalMessage
+  );
   const isLoginModalOpen = useAppSelector((state) => state.auth.loginModalOpen);
   const [formData, setFormData] = useState({
     email: '',
@@ -33,33 +58,18 @@ const LoginModal = () => {
       return;
     }
     setError('');
-    const response = await axios.post(
-      environment.VITE_BACKEND_URL + '/login/',
-      {
-        ...formData,
-      }
-    );
-    if (response.data?.data) {
-      const {
-        first_name,
-        last_name,
-        refresh_token,
-        access_token,
-        image,
-        email,
-        id,
-      } = response.data.data as {
-        first_name: string;
-        last_name: string;
-        refresh_token: string;
-        access_token: string;
-        image: string;
-        email: string;
-        id: string;
-      };
-
-      dispatch(
-        handleSetUserAndLogin({
+    setLoading(true);
+    try {
+      dispatch(setLoginModalMessage(''));
+      const response = await axios.post(
+        environment.VITE_BACKEND_URL + '/login/',
+        {
+          ...formData,
+        }
+      );
+      if (response.data?.data) {
+        setLoading(false);
+        const {
           first_name,
           last_name,
           refresh_token,
@@ -67,11 +77,39 @@ const LoginModal = () => {
           image,
           email,
           id,
-        })
-      );
-      setFormData({ email: '', password: '' });
-    } else {
-      setError('Wrong email or password');
+        } = response.data.data as {
+          first_name: string;
+          last_name: string;
+          refresh_token: string;
+          access_token: string;
+          image: string;
+          email: string;
+          id: string;
+        };
+
+        dispatch(
+          handleSetUserAndLogin({
+            first_name,
+            last_name,
+            refresh_token,
+            access_token,
+            image,
+            email,
+            id,
+          })
+        );
+        setFormData({ email: '', password: '' });
+      }
+    } catch (error) {
+      setLoading(false);
+      const errorObject = (error as unknown as AxiosError)?.response?.data as {
+        message: string;
+      };
+      if (errorObject.message.includes(':')) {
+        setError(errorObject.message.split(':')?.[1]);
+      } else {
+        setError(errorObject.message);
+      }
     }
   };
   return isLoginModalOpen ? (
@@ -105,38 +143,47 @@ const LoginModal = () => {
                     <div className='row'>
                       {config.settings.facebook_login && (
                         <div className='col'>
-                          <a
-                            className='lb-facebook-login btn share-btn third-party facebook'
-                            data-action='social-login'
-                            data-service='facebook'
-                          >
-                            <svg
-                              className='icon'
-                              width='24'
-                              height='24'
-                              xmlns='http://www.w3.org/2000/svg'
-                              viewBox='0 0 512 512'
-                            >
-                              <path d='M448,0H64C28.704,0,0,28.704,0,64v384c0,35.296,28.704,64,64,64h192V336h-64v-80h64v-64c0-53.024,42.976-96,96-96h64v80h-32c-17.664,0-32-1.664-32,16v64h80l-32,80h-48v176h96c35.296,0,64-28.704,64-64V64C512,28.704,483.296,0,448,0z'></path>
-                            </svg>
-                            <span
-                              className='text desktop'
-                              data-translate-text='SIGN_IN_FACEBOOK'
-                            >
-                              {t('SIGN_IN_FACEBOOK')}
-                            </span>
-                            <span
-                              className='text mobile'
-                              data-translate-text='FACEBOOK'
-                            >
-                              {t('FACEBOOK')}
-                            </span>
-                          </a>
+                          <FacebookLogin
+                            appId='1272675010833381'
+                            callback={responseFacebook}
+                            fields='public_profile,email'
+                            render={(renderProps) => (
+                              <a
+                                onClick={renderProps.onClick}
+                                className='lb-facebook-login btn share-btn third-party facebook'
+                                data-action='social-login'
+                                data-service='facebook'
+                              >
+                                <svg
+                                  className='icon'
+                                  width='24'
+                                  height='24'
+                                  xmlns='http://www.w3.org/2000/svg'
+                                  viewBox='0 0 512 512'
+                                >
+                                  <path d='M448,0H64C28.704,0,0,28.704,0,64v384c0,35.296,28.704,64,64,64h192V336h-64v-80h64v-64c0-53.024,42.976-96,96-96h64v80h-32c-17.664,0-32-1.664-32,16v64h80l-32,80h-48v176h96c35.296,0,64-28.704,64-64V64C512,28.704,483.296,0,448,0z'></path>
+                                </svg>
+                                <span
+                                  className='text desktop'
+                                  data-translate-text='SIGN_IN_FACEBOOK'
+                                >
+                                  {t('SIGN_IN_FACEBOOK')}
+                                </span>
+                                <span
+                                  className='text mobile'
+                                  data-translate-text='FACEBOOK'
+                                >
+                                  {t('FACEBOOK')}
+                                </span>
+                              </a>
+                            )}
+                          />
                         </div>
                       )}
                       {config.settings.google_login && (
                         <div className='col'>
                           <a
+                            onClick={() => googleLogin()}
                             className='lb-google-login btn share-btn third-party google'
                             data-action='social-login'
                             data-service='google'
@@ -239,7 +286,11 @@ const LoginModal = () => {
                 <div className='positive hide'>
                   <div className='message'></div>
                 </div>
-                <p id='login-msg'></p>
+                {defaultMessage && (
+                  <div className='lightbox-success success'>
+                    {defaultMessage}
+                  </div>
+                )}
                 <form id='lightbox-login-form' className='vertical'>
                   <div className='row'>
                     <div className='control-group col-lg-6 col-12'>
@@ -265,13 +316,17 @@ const LoginModal = () => {
                           type='text'
                         />
                       </div>
-                      <a
-                        onClick={() => dispatch(handleSetSignUpModalOpen(true))}
-                        className='open-signup small desktop'
-                        data-translate-text='LB_SIGNUP_LOGIN_DONT_HAVE_ACCOUNT_SUB'
-                      >
-                        {t('LB_SIGNUP_LOGIN_DONT_HAVE_ACCOUNT_SUB')}{' '}
-                      </a>
+                      {!loading && (
+                        <a
+                          onClick={() =>
+                            dispatch(handleSetSignUpModalOpen(true))
+                          }
+                          className='open-signup small desktop'
+                          data-translate-text='LB_SIGNUP_LOGIN_DONT_HAVE_ACCOUNT_SUB'
+                        >
+                          {t('LB_SIGNUP_LOGIN_DONT_HAVE_ACCOUNT_SUB')}{' '}
+                        </a>
+                      )}
                     </div>
                     <div className='control-group col-lg-6 col-12'>
                       <label
@@ -296,12 +351,12 @@ const LoginModal = () => {
                           type='password'
                         />
                       </div>
-                      <a
+                      {/* <a
                         className='forgot small'
                         data-translate-text='FORM_FORGOT_PASSWORD'
                       >
                         {t('FORM_FORGOT_PASSWORD')}{' '}
-                      </a>
+                      </a> */}
                     </div>
                   </div>
                 </form>
@@ -310,11 +365,12 @@ const LoginModal = () => {
             <div className='lightbox-footer'>
               <div className='right'>
                 <button
+                  disabled={loading}
                   onClick={() => handleLogin()}
                   className='btn btn-primary submit'
                   data-translate-text='SIGN_IN'
                 >
-                  {t('SIGN_IN')}
+                  {loading ? 'Loading...' : t('SIGN_IN')}
                 </button>
               </div>
               {!true && (

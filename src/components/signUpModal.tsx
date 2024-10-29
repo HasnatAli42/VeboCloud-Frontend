@@ -2,6 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../hooks/storeHooks';
 import { handleSetLoginModalOpen } from '../redux/actions/auth';
 import { useState } from 'react';
+import { environment } from '../environment/environment';
+import axios, { AxiosError } from 'axios';
 
 interface FormData {
   email: string;
@@ -16,24 +18,27 @@ interface FormData {
   isArtist: boolean;
   username: string;
 }
+const initialFormData = {
+  email: '',
+  name: '',
+  password: '',
+  passwordConfirmation: '',
+  dobMonth: '',
+  dobDay: '',
+  dobYear: '',
+  country: '',
+  gender: '',
+  isArtist: false,
+  username: '',
+};
 
 const SignUpModal = () => {
   const dispatch = useAppDispatch();
   const signUpModalOpen = useAppSelector((state) => state.auth.signUpModalOpen);
   const [error, setError] = useState('');
-  const [formData, setFormData] = useState<FormData>({
-    email: '',
-    name: '',
-    password: '',
-    passwordConfirmation: '',
-    dobMonth: '',
-    dobDay: '',
-    dobYear: '',
-    country: '',
-    gender: '',
-    isArtist: false,
-    username: '',
-  });
+  const [responseMessage, setResponseMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState<FormData>(initialFormData);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -55,7 +60,7 @@ const SignUpModal = () => {
       gender_signup: false,
     },
   };
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (
       !formData.email ||
       !formData.name ||
@@ -68,6 +73,29 @@ const SignUpModal = () => {
     if (formData.password !== formData.passwordConfirmation) {
       setError('Passwords do not match');
       return;
+    }
+    try {
+      setLoading(true);
+      const response = await axios.post(
+        environment.VITE_BACKEND_URL + '/register/',
+        {
+          email: formData.email,
+          first_name: formData.name.split(' ')?.[0],
+          last_name: formData.name.split(' ')?.[1] || '',
+          password: formData.password,
+        }
+      );
+      if (response?.data?.message === 'Kindly verify your email') {
+        setResponseMessage(response?.data?.message);
+        setFormData(initialFormData);
+      }
+      setLoading(false);
+    } catch (error) {
+      const errorObject = (error as unknown as AxiosError)?.response?.data as {
+        message: string;
+      };
+      setLoading(false);
+      setError(errorObject.message);
     }
   };
   const { t } = useTranslation();
@@ -457,7 +485,17 @@ const SignUpModal = () => {
                   </div> */}
                 </div>
               </div>
-              {error && <div className='lightbox-error error'>{error}</div>}
+              {error && (
+                <div
+                  className='lightbox-error error mt-3'
+                  dangerouslySetInnerHTML={{ __html: error }}
+                />
+              )}
+              {responseMessage && (
+                <div className='lightbox-success success'>
+                  {responseMessage}
+                </div>
+              )}
               <div id='lightbox-login-form-goes-here'>
                 <div className='error hide'></div>
                 <div className='positive hide'>
@@ -468,11 +506,12 @@ const SignUpModal = () => {
             <div className='lightbox-footer'>
               <div className='right'>
                 <button
+                  disabled={loading}
                   onClick={() => handleSignUp()}
                   className='btn btn-primary submit'
                   data-translate-text='SIGN_IN'
                 >
-                  {t('SIGN_UP')}
+                  {loading ? 'Loading...' : t('SIGN_UP')}
                 </button>
               </div>
             </div>
