@@ -52,7 +52,7 @@ const SignUpModal = () => {
   const config = {
     settings: {
       social_login: true,
-      facebook_login: true,
+      facebook_login: false,
       google_login: true,
       twitter_login: false,
       apple_login: false,

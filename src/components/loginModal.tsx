@@ -10,12 +10,8 @@ import axios, { AxiosError } from 'axios';
 import { environment } from '../environment/environment';
 import { setLoginModalMessage } from '../redux/slices/authSlice';
 import { useGoogleLogin } from '@react-oauth/google';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 
 const LoginModal = () => {
-  const responseFacebook = (response: any) => {
-    console.log(response);
-  };
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       const response = await axios.post(
@@ -45,7 +41,7 @@ const LoginModal = () => {
   const config = {
     settings: {
       social_login: true,
-      facebook_login: true,
+      facebook_login: false,
       google_login: true,
       twitter_login: false,
       apple_login: false,
@@ -143,41 +139,33 @@ const LoginModal = () => {
                     <div className='row'>
                       {config.settings.facebook_login && (
                         <div className='col'>
-                          <FacebookLogin
-                            appId='1272675010833381'
-                            callback={responseFacebook}
-                            fields='public_profile,email'
-                            render={(renderProps) => (
-                              <a
-                                onClick={renderProps.onClick}
-                                className='lb-facebook-login btn share-btn third-party facebook'
-                                data-action='social-login'
-                                data-service='facebook'
-                              >
-                                <svg
-                                  className='icon'
-                                  width='24'
-                                  height='24'
-                                  xmlns='http://www.w3.org/2000/svg'
-                                  viewBox='0 0 512 512'
-                                >
-                                  <path d='M448,0H64C28.704,0,0,28.704,0,64v384c0,35.296,28.704,64,64,64h192V336h-64v-80h64v-64c0-53.024,42.976-96,96-96h64v80h-32c-17.664,0-32-1.664-32,16v64h80l-32,80h-48v176h96c35.296,0,64-28.704,64-64V64C512,28.704,483.296,0,448,0z'></path>
-                                </svg>
-                                <span
-                                  className='text desktop'
-                                  data-translate-text='SIGN_IN_FACEBOOK'
-                                >
-                                  {t('SIGN_IN_FACEBOOK')}
-                                </span>
-                                <span
-                                  className='text mobile'
-                                  data-translate-text='FACEBOOK'
-                                >
-                                  {t('FACEBOOK')}
-                                </span>
-                              </a>
-                            )}
-                          />
+                          <a
+                            className='lb-facebook-login btn share-btn third-party facebook'
+                            data-action='social-login'
+                            data-service='facebook'
+                          >
+                            <svg
+                              className='icon'
+                              width='24'
+                              height='24'
+                              xmlns='http://www.w3.org/2000/svg'
+                              viewBox='0 0 512 512'
+                            >
+                              <path d='M448,0H64C28.704,0,0,28.704,0,64v384c0,35.296,28.704,64,64,64h192V336h-64v-80h64v-64c0-53.024,42.976-96,96-96h64v80h-32c-17.664,0-32-1.664-32,16v64h80l-32,80h-48v176h96c35.296,0,64-28.704,64-64V64C512,28.704,483.296,0,448,0z'></path>
+                            </svg>
+                            <span
+                              className='text desktop'
+                              data-translate-text='SIGN_IN_FACEBOOK'
+                            >
+                              {t('SIGN_IN_FACEBOOK')}
+                            </span>
+                            <span
+                              className='text mobile'
+                              data-translate-text='FACEBOOK'
+                            >
+                              {t('FACEBOOK')}
+                            </span>
+                          </a>
                         </div>
                       )}
                       {config.settings.google_login && (
