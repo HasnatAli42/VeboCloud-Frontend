@@ -43,7 +43,6 @@ const Dashboard: React.FC = () => {
 
 const MainContent: React.FC = () => {
   const navigate = useNavigate();
-  const [uploadMusic, setUploadMusic] = useState(false);
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
   const [songs, setSongs] = useState<song[]>([]);
   useEffect(() => {

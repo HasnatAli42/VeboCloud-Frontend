@@ -14,13 +14,10 @@ import { useGoogleLogin } from '@react-oauth/google';
 const LoginModal = () => {
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      const response = await axios.post(
-        environment.VITE_BACKEND_URL + '/social-login/',
-        {
-          provider: 'google',
-          access_token: tokenResponse.access_token,
-        }
-      );
+      await axios.post(environment.VITE_BACKEND_URL + '/social-login/', {
+        provider: 'google',
+        access_token: tokenResponse.access_token,
+      });
     },
     onError: () => {
       console.log('Login Failed');
