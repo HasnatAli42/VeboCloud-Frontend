@@ -2,36 +2,64 @@ import React, { useState, useRef } from 'react';
 import AudioUpload from '../components/audioUpload';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import Sidebar from '../components/sideBar';
+import { useGetGenres } from '../api/api';
+import axios from 'axios';
+import { environment } from '../environment/environment';
+import { useNavigate } from 'react-router-dom';
+import queryKeys from '../utils/queryKeys';
+import { useQueryClient } from 'react-query';
+import { useAppSelector } from '../hooks/storeHooks';
 
-const UploadMusic: React.FC = () => {
+const UploadComponent: React.FC = () => {
+  const userToken = useAppSelector(
+    (state) => state.auth.loggedInUser?.access_token
+  );
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [trackTitle, setTrackTitle] = useState('');
   const [trackLink, setTrackLink] = useState('');
-  const [artistName, setArtistName] = useState('');
   const [genre, setGenre] = useState('');
   const [tags, setTags] = useState('');
   const [description, setDescription] = useState('');
-
+  const { data } = useGetGenres();
   const imageInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file || !trackTitle || !artistName) {
+    if (!file || !trackTitle || !genre) {
       alert('Please fill all the required fields!');
       return;
     }
+    setLoading(true);
+    const data = new FormData();
+    data.append('file', file);
+    if (imageFile) {
+      data.append('image', imageFile);
+    }
+    data.append('genre_id', genre);
+    data.append('title', trackTitle);
+    data.append('tags', tags);
+    data.append('description', description);
 
-    console.log({
-      file,
-      imageFile,
-      trackTitle,
-      trackLink,
-      artistName,
-      genre,
-      tags,
-      description,
-    });
+    axios
+      .post(environment.VITE_BACKEND_URL + '/songs/', data, {
+        headers: { Authorization: `Bearer ${userToken}` },
+      })
+      .then(() => {
+        queryClient.invalidateQueries(queryKeys.getAllSongsKey());
+        setLoading(false);
+        navigate('/');
+      })
+      .catch(() => {
+        alert(
+          'An error occurred while uploading music, Please try again later'
+        );
+        setLoading(false);
+      });
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,7 +87,11 @@ const UploadMusic: React.FC = () => {
           <form className='track-form' onSubmit={handleSubmit}>
             <h3>
               File Selected: {file.name}{' '}
-              <FontAwesomeIcon onClick={()=>setFile(null)} className='edit-icon' icon={faEdit} />
+              <FontAwesomeIcon
+                onClick={() => setFile(null)}
+                className='edit-icon'
+                icon={faEdit}
+              />
             </h3>
 
             <label htmlFor='track-title'>Track Title *</label>
@@ -81,27 +113,19 @@ const UploadMusic: React.FC = () => {
               placeholder='Enter Track Link'
             />
 
-            <label htmlFor='artist-name'>Main Artist(s) *</label>
-            <input
-              type='text'
-              id='artist-name'
-              value={artistName}
-              onChange={(e) => setArtistName(e.target.value)}
-              placeholder='Enter Artist Name'
-              required
-            />
-
             <label htmlFor='genre'>Genre</label>
             <select
               id='genre'
               value={genre}
               onChange={(e) => setGenre(e.target.value)}
             >
-              <option value=''>Select Genre</option>
-              <option value='rock'>Rock</option>
-              <option value='pop'>Pop</option>
-              <option value='hiphop'>Hip Hop</option>
-              <option value='jazz'>Jazz</option>
+              <option value='' selected disabled>
+                Select Genre
+              </option>
+
+              {data?.map((genre) => (
+                <option value={genre.id}>{genre.name}</option>
+              ))}
             </select>
 
             <label htmlFor='tags'>Tags</label>
@@ -121,8 +145,8 @@ const UploadMusic: React.FC = () => {
               placeholder='Add description about the track'
             />
 
-            <button type='submit' className='upload-btn'>
-              Upload
+            <button disabled={loading} type='submit' className='upload-btn'>
+              {loading ? 'Uploading...' : 'Upload'}
             </button>
           </form>
 
@@ -150,6 +174,27 @@ const UploadMusic: React.FC = () => {
         </div>
       )}
     </div>
+  );
+};
+
+const UploadMusic: React.FC = () => {
+  return (
+    <div className='dashboard'>
+      <MainContent />
+    </div>
+  );
+};
+
+const MainContent: React.FC = () => {
+  return (
+    <>
+      <Sidebar />
+      <div className='main-content'>
+        <section>
+          <UploadComponent />
+        </section>
+      </div>
+    </>
   );
 };
 

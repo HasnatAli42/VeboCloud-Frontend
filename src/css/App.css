@@ -1734,7 +1734,15 @@ input[type="submit"].btn.small {
   text-align: center;
   border-radius: 4px;
 }
-
+.success {
+  background-color: #dfffe6;
+  color: #5e8861;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #cfffd3;
+  text-align: start;
+  border-radius: 4px;
+}
 .upload-info-progress-outer {
   width: 100%;
   margin: 0 0 8px;
@@ -8890,17 +8898,17 @@ svg.icon {
   color: #333333;
 }
 
-.lightbox.lightbox-share .error {
+.lightbox.lightbox-share .error  .success{
   clear: both;
 }
 
-.lightbox.lightbox-share .error:before,
-.lightbox.lightbox-share .error:after {
+.lightbox.lightbox-share .error:before .success:before,
+.lightbox.lightbox-share .error:after .success:after{
   display: table;
   content: "";
 }
 
-.lightbox.lightbox-share .error:after {
+.lightbox.lightbox-share .error:after .success:after{
   clear: both;
 }
 

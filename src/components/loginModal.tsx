@@ -3,14 +3,37 @@ import { useAppDispatch, useAppSelector } from '../hooks/storeHooks';
 import {
   handleSetLoginModalOpen,
   handleSetSignUpModalOpen,
-  handleSetUserAndLogin,
 } from '../redux/actions/auth';
 import { useState } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { environment } from '../environment/environment';
+import { setLoginModalMessage } from '../redux/slices/authSlice';
+import { useGoogleLogin } from '@react-oauth/google';
+import { handleGoogleLoginData, handleLoginData } from '../api/api';
 
 const LoginModal = () => {
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setLoading(true);
+      const response = await axios.post(
+        environment.VITE_BACKEND_URL + '/social-login/',
+        {
+          provider: 'google',
+          access_token: tokenResponse.access_token,
+        }
+      );
+      handleGoogleLoginData(response);
+    },
+    onError: () => {
+      setError('There was an error signing in, please try again later');
+    },
+  });
+
   const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState(false);
+  const defaultMessage = useAppSelector(
+    (state) => state.auth.loginModalMessage
+  );
   const isLoginModalOpen = useAppSelector((state) => state.auth.loginModalOpen);
   const [formData, setFormData] = useState({
     email: '',
@@ -20,7 +43,7 @@ const LoginModal = () => {
   const config = {
     settings: {
       social_login: true,
-      facebook_login: true,
+      facebook_login: false,
       google_login: true,
       twitter_login: false,
       apple_login: false,
@@ -33,45 +56,27 @@ const LoginModal = () => {
       return;
     }
     setError('');
-    const response = await axios.post(
-      environment.VITE_BACKEND_URL + '/login/',
-      {
-        ...formData,
-      }
-    );
-    if (response.data?.data) {
-      const {
-        first_name,
-        last_name,
-        refresh_token,
-        access_token,
-        image,
-        email,
-        id,
-      } = response.data.data as {
-        first_name: string;
-        last_name: string;
-        refresh_token: string;
-        access_token: string;
-        image: string;
-        email: string;
-        id: string;
-      };
-
-      dispatch(
-        handleSetUserAndLogin({
-          first_name,
-          last_name,
-          refresh_token,
-          access_token,
-          image,
-          email,
-          id,
-        })
+    setLoading(true);
+    try {
+      dispatch(setLoginModalMessage(''));
+      const response = await axios.post(
+        environment.VITE_BACKEND_URL + '/login/',
+        {
+          ...formData,
+        }
       );
+      handleLoginData(response);
       setFormData({ email: '', password: '' });
-    } else {
-      setError('Wrong email or password');
+    } catch (error) {
+      setLoading(false);
+      const errorObject = (error as unknown as AxiosError)?.response?.data as {
+        message: string;
+      };
+      if (errorObject.message.includes(':')) {
+        setError(errorObject.message.split(':')?.[1]);
+      } else {
+        setError(errorObject.message);
+      }
     }
   };
   return isLoginModalOpen ? (
@@ -137,6 +142,7 @@ const LoginModal = () => {
                       {config.settings.google_login && (
                         <div className='col'>
                           <a
+                            onClick={() => googleLogin()}
                             className='lb-google-login btn share-btn third-party google'
                             data-action='social-login'
                             data-service='google'
@@ -239,7 +245,11 @@ const LoginModal = () => {
                 <div className='positive hide'>
                   <div className='message'></div>
                 </div>
-                <p id='login-msg'></p>
+                {defaultMessage && (
+                  <div className='lightbox-success success'>
+                    {defaultMessage}
+                  </div>
+                )}
                 <form id='lightbox-login-form' className='vertical'>
                   <div className='row'>
                     <div className='control-group col-lg-6 col-12'>
@@ -265,13 +275,17 @@ const LoginModal = () => {
                           type='text'
                         />
                       </div>
-                      <a
-                        onClick={() => dispatch(handleSetSignUpModalOpen(true))}
-                        className='open-signup small desktop'
-                        data-translate-text='LB_SIGNUP_LOGIN_DONT_HAVE_ACCOUNT_SUB'
-                      >
-                        {t('LB_SIGNUP_LOGIN_DONT_HAVE_ACCOUNT_SUB')}{' '}
-                      </a>
+                      {!loading && (
+                        <a
+                          onClick={() =>
+                            dispatch(handleSetSignUpModalOpen(true))
+                          }
+                          className='open-signup small desktop'
+                          data-translate-text='LB_SIGNUP_LOGIN_DONT_HAVE_ACCOUNT_SUB'
+                        >
+                          {t('LB_SIGNUP_LOGIN_DONT_HAVE_ACCOUNT_SUB')}{' '}
+                        </a>
+                      )}
                     </div>
                     <div className='control-group col-lg-6 col-12'>
                       <label
@@ -296,12 +310,12 @@ const LoginModal = () => {
                           type='password'
                         />
                       </div>
-                      <a
+                      {/* <a
                         className='forgot small'
                         data-translate-text='FORM_FORGOT_PASSWORD'
                       >
                         {t('FORM_FORGOT_PASSWORD')}{' '}
-                      </a>
+                      </a> */}
                     </div>
                   </div>
                 </form>
@@ -310,11 +324,12 @@ const LoginModal = () => {
             <div className='lightbox-footer'>
               <div className='right'>
                 <button
+                  disabled={loading}
                   onClick={() => handleLogin()}
                   className='btn btn-primary submit'
                   data-translate-text='SIGN_IN'
                 >
-                  {t('SIGN_IN')}
+                  {loading ? 'Loading...' : t('SIGN_IN')}
                 </button>
               </div>
               {!true && (

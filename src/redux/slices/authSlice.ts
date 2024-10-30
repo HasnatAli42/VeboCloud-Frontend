@@ -4,12 +4,13 @@ export interface User {
   last_name: string;
   refresh_token: string;
   access_token: string;
-  image: string;
+  image?: string;
   email: string;
   id: string;
 }
 export interface Auth {
   loginModalOpen: boolean;
+  loginModalMessage?: string;
   signUpModalOpen: boolean;
   forgetPasswordModalOpen: boolean;
   loggedIn: boolean;
@@ -36,6 +37,9 @@ export const authSlice = createSlice({
       state.signUpModalOpen = false;
       state.forgetPasswordModalOpen = false;
     },
+    setLoginModalMessage: (state, action: PayloadAction<string>) => {
+      state.loginModalMessage = action.payload;
+    },
     setSignUpModalOpen: (state, action: PayloadAction<boolean>) => {
       state.signUpModalOpen = action.payload;
       state.loginModalOpen = false;
@@ -56,6 +60,7 @@ export const {
   setLoggedIn,
   setLoggedInUser,
   setLoginModalOpen,
+  setLoginModalMessage,
   setSignUpModalOpen,
   setForgetPasswordModalOpen,
 } = authSlice.actions;
