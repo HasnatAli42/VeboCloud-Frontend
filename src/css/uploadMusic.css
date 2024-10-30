@@ -35,6 +35,9 @@
   border: 1px solid #4a4a4a;
   color: #e0e0e0;
 }
+.track-form select{
+  padding: 1px 10px;
+}
 
 .track-form textarea {
   resize: vertical;

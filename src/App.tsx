@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import './css/App.css';
 import './css/dashboard.css';
 import './css/uploadMusic.css';
@@ -20,8 +21,13 @@ import { handleStatesOnRefresh } from './redux/actions/auth';
 import { environment } from './environment/environment';
 import UploadMusic from './pages/uploadMusic';
 
+const queryClient = new QueryClient();
+
 function AppWithRoutes() {
   const loggedInUser = useAppSelector((state) => state.auth.loggedInUser);
+  const loginModalOpen = useAppSelector((state) => state.auth.loginModalOpen);
+  const signUpModalOpen = useAppSelector((state) => state.auth.signUpModalOpen);
+
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(handleStatesOnRefresh());
@@ -30,14 +36,14 @@ function AppWithRoutes() {
     <Router>
       <div>
         <Navbar />
-        <LoginModal />
-        <SignUpModal />
+        {loginModalOpen && <LoginModal />}
+        {signUpModalOpen && <SignUpModal />}
         <Routes>
           <Route
             path='/'
             element={loggedInUser?.email ? <DashboardPage /> : <Home />}
           />
-           <Route
+          <Route
             path='/upload'
             element={loggedInUser?.email ? <UploadMusic /> : <Home />}
           />
@@ -49,11 +55,13 @@ function AppWithRoutes() {
 
 function App() {
   return (
-    <GoogleOAuthProvider clientId={environment.VITE_GOOGLE_CLIENT_ID}>
-      <Provider store={store}>
-        <AppWithRoutes />
-      </Provider>
-    </GoogleOAuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <GoogleOAuthProvider clientId={environment.VITE_GOOGLE_CLIENT_ID}>
+        <Provider store={store}>
+          <AppWithRoutes />
+        </Provider>
+      </GoogleOAuthProvider>
+    </QueryClientProvider>
   );
 }
 

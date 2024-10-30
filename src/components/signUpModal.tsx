@@ -4,6 +4,8 @@ import { handleSetLoginModalOpen } from '../redux/actions/auth';
 import { useState } from 'react';
 import { environment } from '../environment/environment';
 import axios, { AxiosError } from 'axios';
+import { useGoogleLogin } from '@react-oauth/google';
+import { handleGoogleLoginData } from '../api/api';
 
 interface FormData {
   email: string;
@@ -40,6 +42,22 @@ const SignUpModal = () => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<FormData>(initialFormData);
 
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setLoading(true);
+      const response = await axios.post(
+        environment.VITE_BACKEND_URL + '/social-login/',
+        {
+          provider: 'google',
+          access_token: tokenResponse.access_token,
+        }
+      );
+      handleGoogleLoginData(response);
+    },
+    onError: () => {
+      setError('There was an error signing in, please try again later');
+    },
+  });
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -163,6 +181,7 @@ const SignUpModal = () => {
                       {config.settings.google_login && (
                         <div className='col'>
                           <a
+                            onClick={() => googleLogin()}
                             className='lb-google-login btn share-btn third-party google'
                             data-action='social-login'
                             data-service='google'

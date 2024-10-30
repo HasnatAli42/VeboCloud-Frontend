@@ -15,9 +15,16 @@ import {
 } from '../redux/slices/authSlice';
 
 const Header = () => {
+  const loggedInUser = useAppSelector((state) => state.auth.loggedInUser);
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  useEffect(() => {
+    if (!loggedInUser) {
+      navigate('/');
+    }
+  }, [loggedInUser]);
+  
   useEffect(() => {
     if (location.search) {
       const uid = location.search.split('uid=')?.[1]?.split('&token=')?.[0];
@@ -43,7 +50,6 @@ const Header = () => {
       }
     }
   }, []);
-  const loggedInUser = useAppSelector((state) => state.auth.loggedInUser);
   const { t } = useTranslation();
   return (
     <>

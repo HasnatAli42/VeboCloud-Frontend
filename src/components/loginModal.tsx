@@ -3,24 +3,29 @@ import { useAppDispatch, useAppSelector } from '../hooks/storeHooks';
 import {
   handleSetLoginModalOpen,
   handleSetSignUpModalOpen,
-  handleSetUserAndLogin,
 } from '../redux/actions/auth';
 import { useState } from 'react';
 import axios, { AxiosError } from 'axios';
 import { environment } from '../environment/environment';
 import { setLoginModalMessage } from '../redux/slices/authSlice';
 import { useGoogleLogin } from '@react-oauth/google';
+import { handleGoogleLoginData, handleLoginData } from '../api/api';
 
 const LoginModal = () => {
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      await axios.post(environment.VITE_BACKEND_URL + '/social-login/', {
-        provider: 'google',
-        access_token: tokenResponse.access_token,
-      });
+      setLoading(true);
+      const response = await axios.post(
+        environment.VITE_BACKEND_URL + '/social-login/',
+        {
+          provider: 'google',
+          access_token: tokenResponse.access_token,
+        }
+      );
+      handleGoogleLoginData(response);
     },
     onError: () => {
-      console.log('Login Failed');
+      setError('There was an error signing in, please try again later');
     },
   });
 
@@ -60,39 +65,8 @@ const LoginModal = () => {
           ...formData,
         }
       );
-      if (response.data?.data) {
-        setLoading(false);
-        const {
-          first_name,
-          last_name,
-          refresh_token,
-          access_token,
-          image,
-          email,
-          id,
-        } = response.data.data as {
-          first_name: string;
-          last_name: string;
-          refresh_token: string;
-          access_token: string;
-          image: string;
-          email: string;
-          id: string;
-        };
-
-        dispatch(
-          handleSetUserAndLogin({
-            first_name,
-            last_name,
-            refresh_token,
-            access_token,
-            image,
-            email,
-            id,
-          })
-        );
-        setFormData({ email: '', password: '' });
-      }
+      handleLoginData(response);
+      setFormData({ email: '', password: '' });
     } catch (error) {
       setLoading(false);
       const errorObject = (error as unknown as AxiosError)?.response?.data as {

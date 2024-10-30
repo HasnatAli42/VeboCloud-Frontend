@@ -4,7 +4,7 @@ export interface User {
   last_name: string;
   refresh_token: string;
   access_token: string;
-  image: string;
+  image?: string;
   email: string;
   id: string;
 }
