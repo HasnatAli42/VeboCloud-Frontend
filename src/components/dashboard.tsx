@@ -4,6 +4,7 @@ import MusicCard from './musicCard';
 import Sidebar from './sideBar';
 import { useNavigate } from 'react-router-dom';
 import { useGetSongs } from '../api/api';
+import { defaultSongImage, song } from '../utils/constants';
 
 const Dashboard: React.FC = () => {
   return (
@@ -15,14 +16,14 @@ const Dashboard: React.FC = () => {
 
 const MainContent: React.FC = () => {
   const navigate = useNavigate();
-  const [playingAudio, setPlayingAudio] = useState<string | null>(null);
+  const [playingSong, setPlayingSong] = useState<song | null>(null);
 
   const { data, isLoading } = useGetSongs();
 
-  const handleCardClick = (audioSrc: string) => {
-    setPlayingAudio(null);
+  const handleCardClick = (song: song) => {
+    setPlayingSong(null);
     setTimeout(() => {
-      setPlayingAudio(audioSrc);
+      setPlayingSong(song);
     }, 1000);
   };
   return (
@@ -55,12 +56,9 @@ const MainContent: React.FC = () => {
                       id={song.id}
                       title={song.title}
                       author={song.artist?.bio || ''}
-                      imgSrc={
-                        song.image ||
-                        'https://png.pngtree.com/thumb_back/fh260/background/20230612/pngtree-pair-of-headphones-on-the-water-at-nighttime-image_2931863.jpg'
-                      }
+                      imgSrc={song.image || defaultSongImage}
                       audioSrc={song.file}
-                      onCardClick={handleCardClick}
+                      onCardClick={() => handleCardClick(song)}
                     />
                   ))}
                 </div>
@@ -75,12 +73,9 @@ const MainContent: React.FC = () => {
                       id={song.id}
                       title={song.title}
                       author={song.artist?.bio || ''}
-                      imgSrc={
-                        song.image ||
-                        'https://png.pngtree.com/thumb_back/fh260/background/20230612/pngtree-pair-of-headphones-on-the-water-at-nighttime-image_2931863.jpg'
-                      }
+                      imgSrc={song.image || defaultSongImage}
                       audioSrc={song.file}
-                      onCardClick={handleCardClick}
+                      onCardClick={() => handleCardClick(song)}
                       smallCard
                     />
                   ))}
@@ -90,7 +85,13 @@ const MainContent: React.FC = () => {
           </>
         )}
       </div>
-      {playingAudio && <MusicPlayer audioSrc={playingAudio} />}{' '}
+      {playingSong && (
+        <MusicPlayer
+          audioSrc={playingSong?.file}
+          title={playingSong.title}
+          image={playingSong.image || defaultSongImage}
+        />
+      )}{' '}
     </>
   );
 };

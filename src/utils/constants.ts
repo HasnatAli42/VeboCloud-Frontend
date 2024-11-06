@@ -1,3 +1,5 @@
+export const defaultSongImage =
+  'https://png.pngtree.com/thumb_back/fh260/background/20230612/pngtree-pair-of-headphones-on-the-water-at-nighttime-image_2931863.jpg';
 export interface loginResponse {
   first_name: string;
   last_name: string;

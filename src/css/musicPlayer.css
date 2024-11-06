@@ -5,7 +5,20 @@
   left: 0;
   width: 100%;
 }
-
+.music-player .song-header {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+.music-player .song-header h2 {
+  font-size: large;
+  font-weight: 600;
+}
+.music-player .song-header img {
+  width: 3em;
+  height: 3em;
+  object-fit: cover;
+}
 .rhap_container {
   background-color: #1b1b1b !important;
   color: white;
