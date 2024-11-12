@@ -4,6 +4,8 @@ import './css/App.css';
 import './css/dashboard.css';
 import './css/uploadMusic.css';
 import './css/audioUpload.css';
+import './css/artistProfile.css';
+import './css/profile.css';
 import './css/bootstrap.css';
 import './css/theme.css';
 import './i18n';
@@ -13,13 +15,16 @@ import { Provider } from 'react-redux';
 import LoginModal from './components/loginModal';
 import { store } from './redux/store/store';
 import SignUpModal from './components/signUpModal';
-import DashboardPage from './pages/dashboard';
+import RecentlyAddedPage from './pages/recentlyAdded';
 import { useAppDispatch, useAppSelector } from './hooks/storeHooks';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useEffect } from 'react';
 import { handleStatesOnRefresh } from './redux/actions/auth';
 import { environment } from './environment/environment';
 import UploadMusic from './pages/uploadMusic';
+import Profile from './pages/profile';
+import MostPopularPage from './pages/mostPopular';
+import MusicCategoriesPage from './pages/categories';
 
 const queryClient = new QueryClient();
 
@@ -38,16 +43,19 @@ function AppWithRoutes() {
         <Navbar />
         {loginModalOpen && <LoginModal />}
         {signUpModalOpen && <SignUpModal />}
-        <Routes>
-          <Route
-            path='/'
-            element={loggedInUser?.email ? <DashboardPage /> : <Home />}
-          />
-          <Route
-            path='/upload'
-            element={loggedInUser?.email ? <UploadMusic /> : <Home />}
-          />
-        </Routes>
+        {loggedInUser?.email ? (
+          <Routes>
+            <Route path='/' element={<MusicCategoriesPage />} />
+            <Route path='/popular' element={<MostPopularPage />} />
+            <Route path='/recent' element={<RecentlyAddedPage />} />
+            <Route path='/upload' element={<UploadMusic />} />
+            <Route path='/profile' element={<Profile />} />
+          </Routes>
+        ) : (
+          <Routes>
+            <Route path='/' element={<Home />} />
+          </Routes>
+        )}
       </div>
     </Router>
   );
