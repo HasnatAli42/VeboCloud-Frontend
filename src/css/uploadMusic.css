@@ -35,7 +35,7 @@
   border: 1px solid #4a4a4a;
   color: #e0e0e0;
 }
-.track-form select{
+.track-form select {
   padding: 1px 10px;
 }
 
@@ -53,16 +53,22 @@
   padding: 20px;
   color: #e0e0e0;
 }
-
+.small-upload-box,
 .upload-box {
-  width: 400px;
-  height: 400px;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #1e1e1e;
   border: 2px dashed #4a4a4a;
   cursor: pointer;
+}
+.small-upload-box {
+  width: 300px;
+  height: 300px;
+}
+.upload-box {
+  width: 400px;
+  height: 400px;
 }
 .upload-box:hover {
   background-color: #000;

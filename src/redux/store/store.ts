@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import authSlice from '../slices/authSlice';
+import musicSlice from '../slices/musicSlice';
 
 const authPersistConfig = {
   key: 'auth',
@@ -13,6 +14,7 @@ const persistedAuthReducer = persistReducer(authPersistConfig, authSlice);
 export const store = configureStore({
   reducer: {
     auth: persistedAuthReducer,
+    music: musicSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

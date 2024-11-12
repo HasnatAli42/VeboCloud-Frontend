@@ -1,0 +1,157 @@
+.artist-profile-container {
+  color: #fff;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+}
+
+.artist-header {
+  display: flex;
+  align-items: flex-end;
+  background-size: cover;
+  background-color: black;
+  background-position: center;
+  height: 250px;
+  padding: 20px;
+  position: relative;
+  border-radius: 8px;
+}
+
+.artist-info {
+  position: relative;
+  z-index: 1;
+}
+
+.artist-name {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.verified-badge {
+  color: #ff4d68;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.artist-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.play-btn {
+  background-color: #ff4d68;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 13px 19px;
+  margin: 1em 0em;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.follow-btn {
+  background-color: transparent;
+  color: white;
+  border: 1px solid #ff4d68;
+  border-radius: 50px;
+  padding: 13px 19px;
+  margin: 1em 0em;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.more-btn {
+  background-color: transparent;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.track-list {
+  margin-top: 20px;
+}
+
+.track-item {
+  display: grid;
+  grid-template-columns: 40px 1fr 100px 50px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #333;
+}
+
+.track-item:hover {
+  background-color: #333;
+}
+
+.track-number {
+  color: #888;
+}
+
+.track-title {
+  font-size: 1rem;
+  width: 10em;
+}
+
+.track-plays,
+.track-duration {
+  text-align: right;
+}
+.track-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  position: relative;
+  padding: 20px;
+  transition: background-color 0.3s;
+}
+
+.track-item:hover {
+  background-color: #1a1a1a;
+}
+
+.track-id {
+  display: flex;
+  align-items: center;
+  position: relative;
+  gap: 20px;
+}
+
+.play-icon {
+  display: none;
+  position: absolute;
+  left: 0;
+  font-size: 1.5em;
+  cursor: pointer;
+  color: #ff4d68;
+}
+
+.track-id:hover .play-icon {
+  display: inline;
+}
+
+.track-likes {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.track-playing-image {
+  width: 2em;
+}
+.track-playing-image img {
+  width: 1.2em;
+}
+.love-icon {
+  font-size: 1.5em;
+  margin-right: 0.25em;
+  color: #ff4d68;
+  cursor: pointer;
+}
+
+.track-download {
+  font-size: 16px;
+  color: #ccc;
+}

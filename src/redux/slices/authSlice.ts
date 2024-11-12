@@ -6,6 +6,11 @@ export interface User {
   access_token: string;
   image?: string;
   email: string;
+  city?: string;
+  country?: string;
+  state?: string;
+  zipCode?: string;
+  gender?: string;
   id: string;
 }
 export interface Auth {
