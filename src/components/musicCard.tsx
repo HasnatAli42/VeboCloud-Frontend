@@ -5,9 +5,9 @@ import { faPlay, faHeart } from '@fortawesome/free-solid-svg-icons';
 interface CardProps {
   id: number;
   title: string;
-  author: string;
-  imgSrc: string;
-  audioSrc: string;
+  author?: string;
+  imgSrc?: string;
+  audioSrc?: string;
   smallCard?: boolean;
   onCardClick: (audioSrc: string) => void;
 }
@@ -39,16 +39,20 @@ const MusicCard: React.FC<CardProps> = ({
   return (
     <div className={`card ${smallCard ? 'smallCard' : ''}`}>
       <img src={imgSrc} alt={title} />
-      <FontAwesomeIcon
-        onClick={() => onCardClick(audioSrc)} 
-        icon={faPlay}
-        className='play-btn'
-      />
-      <FontAwesomeIcon
-        icon={faHeart}
-        className={`like-btn ${liked ? 'liked' : ''}`}
-        onClick={toggleLike}
-      />
+      {audioSrc && (
+        <>
+          <FontAwesomeIcon
+            onClick={() => onCardClick(audioSrc)}
+            icon={faPlay}
+            className='play-btn'
+          />
+          <FontAwesomeIcon
+            icon={faHeart}
+            className={`like-btn ${liked ? 'liked' : ''}`}
+            onClick={toggleLike}
+          />
+        </>
+      )}
       <div className='card-title'>{title}</div>
       <p>{author}</p>
     </div>

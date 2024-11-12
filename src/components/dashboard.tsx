@@ -1,56 +1,78 @@
-import React, { useState } from 'react';
-import MusicPlayer from './musicPlayer';
+import React from 'react';
 import MusicCard from './musicCard';
-import Sidebar from './sideBar';
 import { useNavigate } from 'react-router-dom';
-import { useGetSongs } from '../api/api';
-import { defaultSongImage, song } from '../utils/constants';
+import { useGetGenres, useGetSongs } from '../api/api';
+import { defaultSongImage, genre, song } from '../utils/constants';
+import { useAppDispatch } from '../hooks/storeHooks';
+import { handlePlaySong } from '../redux/actions/music';
 
-const Dashboard: React.FC = () => {
-  return (
-    <div className='dashboard'>
-      <MainContent />
-    </div>
-  );
+interface pageType {
+  type: 'recent' | 'popular' | 'categories';
+}
+
+export const RecentlyAdded: React.FC = () => {
+  return <MainContent type={'recent'} />;
 };
-
-const MainContent: React.FC = () => {
+export const MostPopular: React.FC = () => {
+  return <MainContent type={'popular'} />;
+};
+export const MusicCategories: React.FC = () => {
+  return <Categories />;
+};
+const MainContent = ({ type }: pageType) => {
   const navigate = useNavigate();
-  const [playingSong, setPlayingSong] = useState<song | null>(null);
+  const dispatch = useAppDispatch();
 
   const { data, isLoading } = useGetSongs();
 
   const handleCardClick = (song: song) => {
-    setPlayingSong(null);
+    dispatch(handlePlaySong([], undefined));
     setTimeout(() => {
-      setPlayingSong(song);
+      dispatch(handlePlaySong(data || [], song));
     }, 1000);
   };
+
+  const requiredData =
+    type === 'recent'
+      ? [...(data || [])]?.sort(
+          (a, b) =>
+            new Date(b.upload_date).getTime() -
+            new Date(a.upload_date).getTime()
+        )
+      : [...(data || [])]?.sort(
+          (a, b) =>
+            new Date(a.upload_date).getTime() -
+            new Date(b.upload_date).getTime()
+        ) || [];
+
   return (
     <>
-      <Sidebar />
       <div className='main-content'>
         {isLoading ? (
           <>Loading...</>
         ) : (
           <>
             <div className='top-bar'>
-              <div className='tabs'>
-                <button>Music</button>
-                <button>Podcasts</button>
-                <button>Live</button>
-              </div>
-
+              <div className='tabs'></div>
               <button className='add-music' onClick={() => navigate('/upload')}>
-                + Add music
+                + Add Soundbyte
               </button>
             </div>
             <>
               <section>
-                <h2>Listen Now</h2>
-                <p>Top picks for you. Updated daily.</p>
+                {type === 'recent' ? (
+                  <>
+                    <h2>Recently Added</h2>
+                    <p>Recently added songs</p>
+                  </>
+                ) : (
+                  <>
+                    <h2>Most Popular</h2>
+                    <p>Most Popular songs</p>
+                  </>
+                )}
                 <div className='cards'>
-                  {data?.map((song) => (
+                  {requiredData?.map((song) => (
                     <MusicCard
                       key={song.id}
                       id={song.id}
@@ -59,24 +81,6 @@ const MainContent: React.FC = () => {
                       imgSrc={song.image || defaultSongImage}
                       audioSrc={song.file}
                       onCardClick={() => handleCardClick(song)}
-                    />
-                  ))}
-                </div>
-              </section>
-              <section>
-                <h2>Made for You</h2>
-                <p>Your personal playlists. Updated daily.</p>
-                <div className='cards'>
-                  {data?.map((song) => (
-                    <MusicCard
-                      key={song.id}
-                      id={song.id}
-                      title={song.title}
-                      author={song.artist?.bio || ''}
-                      imgSrc={song.image || defaultSongImage}
-                      audioSrc={song.file}
-                      onCardClick={() => handleCardClick(song)}
-                      smallCard
                     />
                   ))}
                 </div>
@@ -85,15 +89,49 @@ const MainContent: React.FC = () => {
           </>
         )}
       </div>
-      {playingSong && (
-        <MusicPlayer
-          audioSrc={playingSong?.file}
-          title={playingSong.title}
-          image={playingSong.image || defaultSongImage}
-        />
-      )}{' '}
     </>
   );
 };
+const Categories = () => {
+  const navigate = useNavigate();
 
-export default Dashboard;
+  const { data, isLoading } = useGetGenres();
+
+  const handleCardClick = (genre: genre) => {};
+
+  return (
+    <>
+      <div className='main-content'>
+        {isLoading ? (
+          <>Loading...</>
+        ) : (
+          <>
+            <div className='top-bar'>
+              <div className='tabs'></div>
+              <button className='add-music' onClick={() => navigate('/upload')}>
+                + Add Soundbyte
+              </button>
+            </div>
+            <>
+              <section>
+                <h2>Music Categories</h2>
+                <p>Select from categories below</p>
+                <div className='cards'>
+                  {data?.map((genre) => (
+                    <MusicCard
+                      key={genre.id}
+                      id={genre.id}
+                      title={genre.name}
+                      author={''}
+                      onCardClick={() => handleCardClick(genre)}
+                    />
+                  ))}
+                </div>
+              </section>
+            </>
+          </>
+        )}
+      </div>
+    </>
+  );
+};
