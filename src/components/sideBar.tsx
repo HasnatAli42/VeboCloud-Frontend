@@ -14,13 +14,23 @@ const Sidebar = () => {
         <nav>
           <ul>
             <li className={getActiveClass('/')} onClick={() => navigate('/')}>
-              Listen Now
+              Categories
             </li>
-            <li>Browse</li>
-            <li>Radio</li>
+            <li
+              className={getActiveClass('/popular')}
+              onClick={() => navigate('/popular')}
+            >
+              Popular
+            </li>
+            <li
+              className={getActiveClass('/recent')}
+              onClick={() => navigate('/recent')}
+            >
+              Recently Added
+            </li>
           </ul>
         </nav>
-        <h3>Upload</h3>
+        <h3>My Soundbytes</h3>
         <ul>
           <li
             className={getActiveClass('/upload')}
@@ -28,6 +38,7 @@ const Sidebar = () => {
           >
             Upload Music
           </li>
+          <li>My Soundbytes</li>
         </ul>
         <h3>Library</h3>
         <ul>
