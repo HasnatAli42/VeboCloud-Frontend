@@ -5,18 +5,33 @@
   left: 0;
   width: 100%;
 }
+.song-title-artist {
+  display: flex;
+  flex-direction: column;
+}
+.song-title-artist a:hover {
+  text-decoration: underline;
+}
+.song-title-artist a {
+  font-size: small;
+  color: #c0c0c0;
+}
+.music-player .music-top-bar {
+  display: flex;
+  justify-content: space-between;
+}
 .music-player .song-header {
   display: flex;
   align-items: center;
   gap: 1em;
 }
 .music-player .song-header h2 {
-  font-size: large;
-  font-weight: 600;
+  font-size: small;
 }
 .music-player .song-header img {
-  width: 3em;
-  height: 3em;
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
   object-fit: cover;
 }
 .rhap_container {

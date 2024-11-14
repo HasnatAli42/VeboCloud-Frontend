@@ -3,6 +3,10 @@
   padding: 20px;
   font-family: 'Arial', sans-serif;
 }
+.edit-profile-button-container {
+  text-align: right;
+  margin: 1em 0em;
+}
 
 .artist-header {
   display: flex;
@@ -27,6 +31,7 @@
 }
 
 .verified-badge {
+  margin-bottom: 10px;
   color: #ff4d68;
   font-size: 0.9rem;
   display: inline-flex;
@@ -35,6 +40,7 @@
 
 .artist-actions {
   display: flex;
+  align-items: center;
   gap: 15px;
   margin-top: 20px;
 }
@@ -144,13 +150,20 @@
 .track-playing-image img {
   width: 1.2em;
 }
-.love-icon {
-  font-size: 1.5em;
-  margin-right: 0.25em;
-  color: #ff4d68;
+.track-likes .like-btn {
+  font-size: 20px;
+    color: rgb(136, 136, 136);
+  padding: 4px;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
   cursor: pointer;
 }
-
+.track-likes .liked {
+  color: #ff6363;
+}
+.track-likes .like-btn:hover {
+  transform: scale(1.2);
+}
 .track-download {
   font-size: 16px;
   color: #ccc;

@@ -3,9 +3,11 @@ import { useLocation, useNavigate } from 'react-router-dom';
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-
   const getActiveClass = (pathname: string) =>
-    pathname === location.pathname ? 'active' : '';
+    pathname === location.pathname ||
+    (location.pathname.includes(pathname) && pathname !== '/')
+      ? 'active'
+      : '';
 
   return (
     <div className='sidebar'>
@@ -38,12 +40,22 @@ const Sidebar = () => {
           >
             Upload Music
           </li>
-          <li>My Soundbytes</li>
+          <li
+            className={getActiveClass('/profile/')}
+            onClick={() => navigate('/profile/1')}
+          >
+            My Soundbytes
+          </li>
         </ul>
         <h3>Library</h3>
         <ul>
           <li>Playlists</li>
-          <li>Songs</li>
+          <li
+            className={getActiveClass('/songs')}
+            onClick={() => navigate('/songs')}
+          >
+            Songs
+          </li>
           <li>Made for You</li>
           <li>Artists</li>
           <li>Albums</li>

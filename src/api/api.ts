@@ -7,6 +7,7 @@ import {
   genre,
   googleLoginResponse,
   loginResponse,
+  profile,
   song,
 } from '../utils/constants';
 import { handleSetUserAndLogin } from '../redux/actions/auth';
@@ -33,6 +34,25 @@ export const useGetGenres = () => {
     async () => {
       const resp = await axios.get(environment.VITE_BACKEND_URL + '/genres/');
       return (resp?.data?.data || []) as genre[];
+    },
+    {
+      onError: (error: Error & { status: number }) => {
+        console.error('Error fetching genres:', error);
+      },
+      staleTime: 60000,
+    }
+  );
+};
+
+export const useGetProfile = () => {
+  const accessToken = store.getState().auth.loggedInUser?.access_token;
+  return useQuery(
+    queryKeys.getProfileKey(accessToken),
+    async () => {
+      const resp = await axios.get(environment.VITE_BACKEND_URL + '/profile/', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      return resp?.data?.data as profile;
     },
     {
       onError: (error: Error & { status: number }) => {
@@ -83,5 +103,37 @@ export const handleLoginData = (response: AxiosResponse) => {
         id,
       })
     );
+  }
+};
+
+export const handleLikeSong = async (songId: string | number) => {
+  const accessToken = store.getState().auth.loggedInUser?.access_token;
+  await axios.post(
+    environment.VITE_BACKEND_URL + `/songs/${songId}/like/`,
+    {},
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    }
+  );
+};
+
+export const FileDownload = async (fileLink: string, fileName: string) => {
+  try {
+    const response = await axios.get(fileLink, {
+      responseType: 'blob',
+    });
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `${fileName}.mp3`);
+
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Error downloading the file:', error);
   }
 };

@@ -15775,6 +15775,7 @@ a.btn.btn-secondary.btn-icon-only.btn-favorite {
 
 #profile-button .profile-img {
   position: relative;
+  object-fit: cover;
   display: inline-block;
   float: left;
   border: solid 1px #e3e3e3;
@@ -20940,6 +20941,9 @@ article figure {
   width: 24px;
   height: 24px;
   fill: #ff5353;
+}
+.pointer{
+  cursor: pointer;
 }
 @media (max-width: 768px) {
   .landing-section-title {

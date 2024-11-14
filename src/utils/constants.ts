@@ -20,21 +20,27 @@ export interface googleLoginResponse {
   access_token: string;
   refresh_token: string;
 }
+
+export interface songArtist {
+  id: number;
+  follower_count: number;
+  full_name: string;
+  cover_photo: string;
+  user: {
+    id: number;
+    email: string;
+  };
+  bio: string;
+  profile_picture: string;
+  social_media_links: string;
+  verified: boolean;
+}
 export interface song {
   id: number;
   title: string;
   image?: string;
-  artist?: {
-    id: number;
-    user: {
-      id: number;
-      email: string;
-    };
-    bio: string;
-    profile_picture: string;
-    social_media_links: string;
-    verified: boolean;
-  };
+  artist?: songArtist;
+  like_count: number;
   album?: {
     id: number;
     title: string;
@@ -42,6 +48,7 @@ export interface song {
     cover_art: string;
   };
   genre?: {
+    id: number;
     name: string;
     description: string;
   };
@@ -54,4 +61,28 @@ export interface genre {
   id: number;
   name: string;
   description: string;
+}
+
+export interface profile {
+  followed_artists: number[];
+  liked_songs: number[];
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number: string;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  zip_code: string;
+  gender: string;
+  image: string;
+  cover_photo: string;
+  status: boolean;
+  is_active: boolean;
+  is_verified: boolean;
+  is_card_attached: string;
+  stripe_customer_id: string;
+  created_at: string;
+  updated_at: string;
 }

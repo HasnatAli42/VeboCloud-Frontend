@@ -25,6 +25,8 @@ import UploadMusic from './pages/uploadMusic';
 import Profile from './pages/profile';
 import MostPopularPage from './pages/mostPopular';
 import MusicCategoriesPage from './pages/categories';
+import ArtistProfilePage from './pages/artistProfile';
+import SongsPage from './pages/songs';
 
 const queryClient = new QueryClient();
 
@@ -48,8 +50,10 @@ function AppWithRoutes() {
             <Route path='/' element={<MusicCategoriesPage />} />
             <Route path='/popular' element={<MostPopularPage />} />
             <Route path='/recent' element={<RecentlyAddedPage />} />
+            <Route path='/songs' element={<SongsPage />} />
             <Route path='/upload' element={<UploadMusic />} />
-            <Route path='/profile' element={<Profile />} />
+            <Route path='/profile/:id' element={<ArtistProfilePage />} />
+            <Route path='/editProfile' element={<Profile />} />
           </Routes>
         ) : (
           <Routes>

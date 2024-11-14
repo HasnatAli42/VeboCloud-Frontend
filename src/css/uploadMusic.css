@@ -53,6 +53,7 @@
   padding: 20px;
   color: #e0e0e0;
 }
+.small-upload-box-cover,
 .small-upload-box,
 .upload-box {
   display: flex;
@@ -65,6 +66,20 @@
 .small-upload-box {
   width: 300px;
   height: 300px;
+}
+.small-upload-box-cover {
+  width: 700px;
+  height: 250px;
+}
+.small-upload-box img {
+  width: 300px !important;
+  height: 300px !important;
+  object-fit: cover;
+}
+.small-upload-box-cover img {
+  width: 700px !important;
+  height: 250px !important;
+  object-fit: cover;
 }
 .upload-box {
   width: 400px;

@@ -120,7 +120,7 @@ const Header = () => {
           )}
           {loggedInUser && (
             <div id='header-account-group' className='user-asset'>
-              <a id='profile-button' onClick={() => navigate('/profile')}>
+              <a id='profile-button' onClick={() => navigate('/editProfile')}>
                 <img
                   src={loggedInUser.image}
                   className='profile-img'

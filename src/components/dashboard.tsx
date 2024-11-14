@@ -1,15 +1,17 @@
 import React from 'react';
 import MusicCard from './musicCard';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useGetGenres, useGetSongs } from '../api/api';
 import { defaultSongImage, genre, song } from '../utils/constants';
 import { useAppDispatch } from '../hooks/storeHooks';
 import { handlePlaySong } from '../redux/actions/music';
 
 interface pageType {
-  type: 'recent' | 'popular' | 'categories';
+  type?: 'recent' | 'popular' | 'categories';
 }
-
+export const AllSongs: React.FC = () => {
+  return <MainContent />;
+};
 export const RecentlyAdded: React.FC = () => {
   return <MainContent type={'recent'} />;
 };
@@ -20,10 +22,17 @@ export const MusicCategories: React.FC = () => {
   return <Categories />;
 };
 const MainContent = ({ type }: pageType) => {
+  const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-
+  const { data: genres } = useGetGenres();
   const { data, isLoading } = useGetSongs();
+  const genreName =
+    location.search && location.search?.split('category=')?.[1]
+      ? genres?.find(
+          (g) => g.id === Number(location.search?.split('category=')?.[1])
+        )?.name
+      : '';
 
   const handleCardClick = (song: song) => {
     dispatch(handlePlaySong([], undefined));
@@ -39,12 +48,15 @@ const MainContent = ({ type }: pageType) => {
             new Date(b.upload_date).getTime() -
             new Date(a.upload_date).getTime()
         )
-      : [...(data || [])]?.sort(
-          (a, b) =>
-            new Date(a.upload_date).getTime() -
-            new Date(b.upload_date).getTime()
-        ) || [];
-
+      : type === 'popular'
+      ? [...(data || [])]?.sort((a, b) => b.like_count - a.like_count) || []
+      : location.search && location.search?.split('category=')?.[1]
+      ? data?.filter(
+          (d) =>
+            d.genre &&
+            d.genre?.id == Number(location.search.split('category=')[1])
+        )
+      : data;
   return (
     <>
       <div className='main-content'>
@@ -65,10 +77,14 @@ const MainContent = ({ type }: pageType) => {
                     <h2>Recently Added</h2>
                     <p>Recently added songs</p>
                   </>
-                ) : (
+                ) : type === 'popular' ? (
                   <>
                     <h2>Most Popular</h2>
                     <p>Most Popular songs</p>
+                  </>
+                ) : (
+                  <>
+                    <h2>Songs {genreName ? '- ' + genreName : ''}</h2>
                   </>
                 )}
                 <div className='cards'>
@@ -97,7 +113,9 @@ const Categories = () => {
 
   const { data, isLoading } = useGetGenres();
 
-  const handleCardClick = (genre: genre) => {};
+  const handleCardClick = (genre: genre) => {
+    navigate(`/songs?category=${genre.id}`);
+  };
 
   return (
     <>
@@ -118,13 +136,19 @@ const Categories = () => {
                 <p>Select from categories below</p>
                 <div className='cards'>
                   {data?.map((genre) => (
-                    <MusicCard
+                    <div
+                      className='pointer'
                       key={genre.id}
-                      id={genre.id}
-                      title={genre.name}
-                      author={''}
-                      onCardClick={() => handleCardClick(genre)}
-                    />
+                      onClick={() => handleCardClick(genre)}
+                    >
+                      {' '}
+                      <MusicCard
+                        id={genre.id}
+                        title={genre.name}
+                        author={''}
+                        onCardClick={() => handleCardClick(genre)}
+                      />
+                    </div>
                   ))}
                 </div>
               </section>
