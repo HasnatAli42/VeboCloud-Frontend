@@ -106,6 +106,7 @@ const EditProfile: React.FC = () => {
       {' '}
       <div className='edit-profile-form'>
         <h2 className='edit-profile-heading'>Edit profile</h2>
+        <label className='edit-profile-label'>Cover Photo</label>
         <div className='image-upload'>
           <div
             className='small-upload-box-cover'
@@ -215,6 +216,7 @@ const EditProfile: React.FC = () => {
         </div>
       </div>
       <div className='image-upload'>
+        <label className='edit-profile-label'>Profile Photo</label>
         <div className='small-upload-box' onClick={handleImageBoxClick}>
           {user.image || profileImage ? (
             <img

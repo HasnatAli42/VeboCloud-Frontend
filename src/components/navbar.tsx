@@ -6,7 +6,7 @@ import {
   handleSetLoginModalOpen,
   handleSetSignUpModalOpen,
 } from '../redux/actions/auth';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { environment } from '../environment/environment';
 import {
@@ -14,9 +14,32 @@ import {
   setLoginModalOpen,
 } from '../redux/slices/authSlice';
 import MusicPlayer from './musicPlayer';
+import { handleSearchTerm } from '../redux/actions/music';
 
 const Header = () => {
   const loggedInUser = useAppSelector((state) => state.auth.loggedInUser);
+  const loggedInTime = useAppSelector((state) => state.auth.loggedInTime);
+  const [isOpen, setIsOpen] = useState(false);
+  const [localSearchTerm, setLocalSearchTerm] = useState('');
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -24,8 +47,24 @@ const Header = () => {
     if (!loggedInUser) {
       navigate('/');
     }
+    if (loggedInUser) {
+      if (!loggedInTime) {
+        dispatch(handleLogout());
+      } else {
+        const timeDifference = Math.abs(loggedInTime - new Date().getTime());
+        const hoursDifference = timeDifference / (1000 * 60 * 60);
+
+        if (hoursDifference >= 24) {
+          dispatch(handleLogout());
+        }
+      }
+    }
   }, [loggedInUser]);
 
+  useEffect(() => {
+    dispatch(handleSearchTerm(''));
+    setLocalSearchTerm('');
+  }, [location.pathname]);
   useEffect(() => {
     if (location.search) {
       const uid = location.search.split('uid=')?.[1]?.split('&token=')?.[0];
@@ -51,6 +90,19 @@ const Header = () => {
       }
     }
   }, []);
+  const debounce = (func: (...args: any[]) => void, delay: number) => {
+    let timeoutId: number | undefined;
+    return (...args: any[]) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => func(...args), delay);
+    };
+  };
+
+  const searchTerm = (term: string) => {
+    dispatch(handleSearchTerm(term));
+  };
+
+  const debouncedHandleSearchTerm = debounce(searchTerm, 1500);
   const { t } = useTranslation();
   return (
     <>
@@ -63,11 +115,15 @@ const Header = () => {
           <form id='header-search'>
             <span className='prediction'></span>
             <input
+              value={localSearchTerm}
+              onChange={(e) => {
+                setLocalSearchTerm(e.target.value);
+                debouncedHandleSearchTerm(e.target.value);
+              }}
               className='search'
-              name='q'
               autoComplete='off'
               type='text'
-              placeholder={t('SEARCH_FOR_MUSIC')}
+              placeholder={'Search for soundbytes, categories'}
             />
             <svg
               className='icon search'
@@ -88,7 +144,7 @@ const Header = () => {
         </div>
 
         <div id='header-user-assets' className='session desktop'>
-          {loggedInUser === undefined ? (
+          {loggedInUser === undefined && (
             <>
               {' '}
               <a
@@ -108,30 +164,50 @@ const Header = () => {
                 {t('BECOME_A_MEMBER')}
               </a>
             </>
-          ) : (
-            <a
-              id='header-login-btn'
-              onClick={() => dispatch(handleLogout())}
-              className='login'
-              data-translate-text='SIGN_OUT'
-            >
-              {t('SIGN_OUT')}
-            </a>
           )}
+
           {loggedInUser && (
-            <div id='header-account-group' className='user-asset'>
-              <a id='profile-button' onClick={() => navigate('/editProfile')}>
-                <img
-                  src={loggedInUser.image}
-                  className='profile-img'
-                  width='16'
-                  height='16'
-                  alt='Profile'
-                />
-                <p className='title'>
-                  {loggedInUser?.first_name + ' ' + loggedInUser?.last_name}
-                </p>
-              </a>
+            <div className='dropdown-container' ref={dropdownRef}>
+              <div id='header-account-group' className='user-asset'>
+                <button className='dropdown-button' onClick={toggleDropdown}>
+                  <a id='profile-button'>
+                    <img
+                      src={loggedInUser.image}
+                      className='profile-img'
+                      width='16'
+                      height='16'
+                      alt='Profile'
+                    />
+                    <p className='title'>
+                      {loggedInUser?.first_name + ' ' + loggedInUser?.last_name}
+                    </p>
+                  </a>
+                </button>{' '}
+              </div>
+
+              {isOpen && (
+                <div className='dropdown-menu'>
+                  <div
+                    className='dropdown-item'
+                    onClick={() => {
+                      toggleDropdown();
+                      dispatch(handleLogout());
+                    }}
+                    data-translate-text='SIGN_OUT'
+                  >
+                    {t('SIGN_OUT')}
+                  </div>
+                  <div
+                    className='dropdown-item'
+                    onClick={() => {
+                      toggleDropdown();
+                      navigate('/editProfile');
+                    }}
+                  >
+                    Edit Profile
+                  </div>
+                </div>
+              )}
             </div>
           )}
           {/* <div id='account-buttons' className='user-asset'>

@@ -201,9 +201,9 @@ button {
   font-size: 1rem;
 }
 
-button:hover {
+/* button:hover {
   background-color: #ff6d85;
-}
+} */
 
 .header-bar {
   background-color: #222;

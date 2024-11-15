@@ -1,6 +1,16 @@
 import { song } from '../../utils/constants';
-import { setCurrentSong, setPlaylist } from '../slices/musicSlice';
+import {
+  setCurrentSong,
+  setPlaylist,
+  setSearchTerm,
+} from '../slices/musicSlice';
 import { AppDispatch } from '../store/store';
+
+export const handleSearchTerm = (search: string) => {
+  return (dispatch: AppDispatch) => {
+    dispatch(setSearchTerm(search));
+  };
+};
 
 export const handleSetCurrentSong = (song?: song) => {
   return (dispatch: AppDispatch) => {

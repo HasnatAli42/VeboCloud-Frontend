@@ -15,6 +15,7 @@ export interface User {
 }
 export interface Auth {
   loginModalOpen: boolean;
+  loggedInTime?: number;
   loginModalMessage?: string;
   signUpModalOpen: boolean;
   forgetPasswordModalOpen: boolean;
@@ -23,6 +24,7 @@ export interface Auth {
 }
 
 const initialState: Auth = {
+  loggedInTime: undefined,
   loginModalOpen: false,
   forgetPasswordModalOpen: false,
   signUpModalOpen: false,
@@ -31,9 +33,12 @@ const initialState: Auth = {
 };
 
 export const authSlice = createSlice({
-  name: 'Jobs',
+  name: 'Auth',
   initialState,
   reducers: {
+    setLoggedInTime: (state) => {
+      state.loggedInTime = new Date().getTime();
+    },
     setLoggedIn: (state, action: PayloadAction<boolean>) => {
       state.loggedIn = action.payload;
     },
@@ -63,6 +68,7 @@ export const authSlice = createSlice({
 
 export const {
   setLoggedIn,
+  setLoggedInTime,
   setLoggedInUser,
   setLoginModalOpen,
   setLoginModalMessage,

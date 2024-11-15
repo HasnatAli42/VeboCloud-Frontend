@@ -12,6 +12,7 @@ import { useQueryClient } from 'react-query';
 import { useAppSelector } from '../hooks/storeHooks';
 
 const UploadComponent: React.FC = () => {
+  const search = useAppSelector((state) => state.music.searchTerm);
   const userToken = useAppSelector(
     (state) => state.auth.loggedInUser?.access_token
   );
@@ -25,7 +26,7 @@ const UploadComponent: React.FC = () => {
   const [genre, setGenre] = useState('');
   const [tags, setTags] = useState('');
   const [description, setDescription] = useState('');
-  const { data } = useGetGenres();
+  const { data } = useGetGenres(search);
   const imageInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -104,23 +105,14 @@ const UploadComponent: React.FC = () => {
               required
             />
 
-            <label htmlFor='track-link'>Track Link</label>
-            <input
-              type='url'
-              id='track-link'
-              value={trackLink}
-              onChange={(e) => setTrackLink(e.target.value)}
-              placeholder='Enter Track Link'
-            />
-
-            <label htmlFor='genre'>Genre</label>
+            <label htmlFor='genre'>Category</label>
             <select
               id='genre'
               value={genre}
               onChange={(e) => setGenre(e.target.value)}
             >
               <option value='' selected disabled>
-                Select Genre
+                Select Category
               </option>
 
               {data?.map((genre) => (

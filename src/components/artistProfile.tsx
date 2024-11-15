@@ -1,23 +1,42 @@
 import { useAppDispatch, useAppSelector } from '../hooks/storeHooks';
-import { FileDownload, handleLikeSong, useGetProfile, useGetSongs } from '../api/api';
+import {
+  FileDownload,
+  handleLikeSong,
+  useGetProfile,
+  useGetSongs,
+} from '../api/api';
 import { formatTrackLength } from '../utils/functions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faHeart, faDownload } from '@fortawesome/free-solid-svg-icons';
+import {
+  faPlay,
+  faHeart,
+  faDownload,
+  faEnvelope,
+} from '@fortawesome/free-solid-svg-icons';
 import playingImage from '../images/black_playing_queue.gif';
 import { song } from '../utils/constants';
 import { handlePlaySong } from '../redux/actions/music';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { environment } from '../environment/environment';
 import { useState } from 'react';
+import { faFacebook, faTwitter } from '@fortawesome/free-brands-svg-icons';
+import { useQueryClient } from 'react-query';
+import queryKeys from '../utils/queryKeys';
 
 const ArtistProfile = () => {
+  const userToken = useAppSelector(
+    (state) => state.auth.loggedInUser?.access_token
+  );
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const search = useAppSelector((state) => state.music.searchTerm);
   const params = useParams();
   const [likedSongs, setLikedSongs] = useState<number[]>([]);
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.loggedInUser);
   const currentPlayingSong = useAppSelector((state) => state.music.currentSong);
-  const { data } = useGetSongs();
+  const { data } = useGetSongs(search);
 
   const artist = data?.find(
     (song) => song.artist?.user.id === Number(params.id)
@@ -25,9 +44,9 @@ const ArtistProfile = () => {
   const { data: profile } = useGetProfile();
   const [follow, setFollow] = useState(false);
 
-  const handleFollow = () => {
+  const handleFollow = async () => {
     setFollow(true);
-    axios.post(
+    await axios.post(
       environment.VITE_BACKEND_URL + `/artists/${artist?.id}/follow/`,
       {},
       {
@@ -46,11 +65,16 @@ const ArtistProfile = () => {
       );
     }, 1000);
   };
+  const getSongLink = (songId: number) =>
+    `${environment.VITE_VEBO_CLOUD_FRONTEND_URL}/songs?songid=${songId}`;
   return (
     <div className='artist-profile-container'>
       {artist?.user.id == user?.id && (
         <div className='edit-profile-button-container'>
-          <button className='add-music' onClick={() => {}}>
+          <button
+            className='add-music'
+            onClick={() => navigate('/editprofile')}
+          >
             Edit Profile
           </button>
         </div>
@@ -112,19 +136,61 @@ const ArtistProfile = () => {
                       ? 'liked'
                       : ''
                   }`}
-                  onClick={() => {
+                  onClick={async () => {
                     const alreadyLiked = likedSongs.includes(track.id);
                     if (alreadyLiked)
                       setLikedSongs(likedSongs.filter((id) => id !== track.id));
                     else setLikedSongs([...likedSongs, track.id]);
-                    handleLikeSong(track.id);
+                    {
+                      await handleLikeSong(track.id);
+                    }
                   }}
                 />
                 <span>{track.like_count}</span>
               </div>
               <div className='track-download'>
-                <FontAwesomeIcon icon={faDownload} onClick={()=> FileDownload(track.file, track.title)}/>
+                <FontAwesomeIcon
+                  icon={faDownload}
+                  onClick={() => FileDownload(track.file, track.title)}
+                />
               </div>
+              <div className='track-download'>
+                <FontAwesomeIcon
+                  icon={faFacebook}
+                  onClick={() =>
+                    window.open(
+                      `https://www.facebook.com/sharer/sharer.php?u=${getSongLink(
+                        track.id
+                      )}}`,
+                      '_blank'
+                    )
+                  }
+                />
+                <FontAwesomeIcon
+                  icon={faTwitter}
+                  onClick={() =>
+                    window.open(
+                      `https://twitter.com/intent/tweet?url=${getSongLink(
+                        track.id
+                      )}`,
+                      '_blank'
+                    )
+                  }
+                />
+                <FontAwesomeIcon
+                  icon={faEnvelope}
+                  onClick={() =>
+                    window.open(
+                      `https://mail.google.com/mail/u/0/?view=cm&to&body=${getSongLink(
+                        track.id
+                      )}`,
+                      '_blank'
+                    )
+                  }
+                />
+                <p>Share Now</p>
+              </div>
+
               <div className='track-duration'>
                 {formatTrackLength(track.length)}
               </div>

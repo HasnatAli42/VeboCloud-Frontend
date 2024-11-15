@@ -12,11 +12,16 @@ import {
 } from '../utils/constants';
 import { handleSetUserAndLogin } from '../redux/actions/auth';
 
-export const useGetSongs = () => {
+export const useGetSongs = (search?: string) => {
   return useQuery(
-    queryKeys.getAllSongsKey(),
+    queryKeys.getAllSongsKey(search?.toLowerCase()),
     async () => {
       const resp = await axios.get(environment.VITE_BACKEND_URL + '/songs/');
+      if (search) {
+        return (resp.data.data as song[]).filter((song) =>
+          song.title.toLowerCase().includes(search?.toLowerCase())
+        );
+      }
       return resp.data.data as song[];
     },
     {
@@ -28,11 +33,16 @@ export const useGetSongs = () => {
   );
 };
 
-export const useGetGenres = () => {
+export const useGetGenres = (search?: string) => {
   return useQuery(
-    queryKeys.getAllGenresKey(),
+    queryKeys.getAllGenresKey(search?.toLowerCase()),
     async () => {
       const resp = await axios.get(environment.VITE_BACKEND_URL + '/genres/');
+      if (search) {
+        return (resp.data.data as genre[]).filter((genre) =>
+          genre.name.toLowerCase().includes(search.toLowerCase())
+        );
+      }
       return (resp?.data?.data || []) as genre[];
     },
     {

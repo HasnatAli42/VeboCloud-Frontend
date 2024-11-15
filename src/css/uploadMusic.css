@@ -70,6 +70,8 @@
 .small-upload-box-cover {
   width: 700px;
   height: 250px;
+  margin-top: -1.5em;
+  margin-left: -1.5em;
 }
 .small-upload-box img {
   width: 300px !important;

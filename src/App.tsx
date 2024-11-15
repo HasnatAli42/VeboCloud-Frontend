@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import './css/App.css';
+import './css/dropdown.css';
 import './css/dashboard.css';
 import './css/uploadMusic.css';
 import './css/audioUpload.css';

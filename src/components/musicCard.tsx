@@ -5,6 +5,8 @@ import { faPlay, faHeart } from '@fortawesome/free-solid-svg-icons';
 interface CardProps {
   id: number;
   title: string;
+  songLiked?: boolean;
+  handleLikeSong?: () => void;
   author?: string;
   imgSrc?: string;
   audioSrc?: string;
@@ -15,6 +17,8 @@ interface CardProps {
 const MusicCard: React.FC<CardProps> = ({
   id,
   title,
+  songLiked,
+  handleLikeSong,
   author,
   imgSrc,
   audioSrc,
@@ -30,10 +34,13 @@ const MusicCard: React.FC<CardProps> = ({
     }
   }, [id]);
 
-  const toggleLike = () => {
+  const toggleLike = async () => {
+    const liked = songLiked;
     const newLikedState = !liked;
     setLiked(newLikedState);
-    localStorage.setItem(`liked-${id}`, newLikedState.toString());
+    if (handleLikeSong) {
+      handleLikeSong();
+    }
   };
 
   return (
@@ -48,7 +55,7 @@ const MusicCard: React.FC<CardProps> = ({
           />
           <FontAwesomeIcon
             icon={faHeart}
-            className={`like-btn ${liked ? 'liked' : ''}`}
+            className={`like-btn ${songLiked || liked ? 'liked' : ''}`}
             onClick={toggleLike}
           />
         </>

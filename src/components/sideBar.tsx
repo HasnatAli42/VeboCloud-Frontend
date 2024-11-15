@@ -38,7 +38,7 @@ const Sidebar = () => {
             className={getActiveClass('/upload')}
             onClick={() => navigate('/upload')}
           >
-            Upload Music
+            Add Soundbyte
           </li>
           <li
             className={getActiveClass('/profile/')}

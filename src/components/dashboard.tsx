@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import MusicCard from './musicCard';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useGetGenres, useGetSongs } from '../api/api';
+import {
+  handleLikeSong,
+  useGetGenres,
+  useGetProfile,
+  useGetSongs,
+} from '../api/api';
 import { defaultSongImage, genre, song } from '../utils/constants';
-import { useAppDispatch } from '../hooks/storeHooks';
+import { useAppDispatch, useAppSelector } from '../hooks/storeHooks';
 import { handlePlaySong } from '../redux/actions/music';
+import { useQueryClient } from 'react-query';
+import queryKeys from '../utils/queryKeys';
 
 interface pageType {
   type?: 'recent' | 'popular' | 'categories';
@@ -22,11 +29,17 @@ export const MusicCategories: React.FC = () => {
   return <Categories />;
 };
 const MainContent = ({ type }: pageType) => {
+  const userToken = useAppSelector(
+    (state) => state.auth.loggedInUser?.access_token
+  );
+  const queryClient = useQueryClient();
+  const search = useAppSelector((state) => state.music.searchTerm);
+  const { data: profile } = useGetProfile();
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { data: genres } = useGetGenres();
-  const { data, isLoading } = useGetSongs();
+  const { data: genres } = useGetGenres(search);
+  const { data, isLoading } = useGetSongs(search);
   const genreName =
     location.search && location.search?.split('category=')?.[1]
       ? genres?.find(
@@ -40,7 +53,18 @@ const MainContent = ({ type }: pageType) => {
       dispatch(handlePlaySong(data || [], song));
     }, 1000);
   };
-
+  useEffect(() => {
+    if (location.search.includes('songid') && location.pathname === '/songs') {
+      const songId = location.search.split('songid=')?.[1];
+      if (songId && data) {
+        const song = data.find((song) => song.id == Number(songId));
+        if (song) {
+          handleCardClick(song);
+        }
+        navigate('/songs');
+      }
+    }
+  }, [location.pathname, location.search, data]);
   const requiredData =
     type === 'recent'
       ? [...(data || [])]?.sort(
@@ -90,6 +114,13 @@ const MainContent = ({ type }: pageType) => {
                 <div className='cards'>
                   {requiredData?.map((song) => (
                     <MusicCard
+                      songLiked={profile?.liked_songs.includes(song.id)}
+                      handleLikeSong={async () => {
+                        await handleLikeSong(song.id);
+                        queryClient.invalidateQueries(
+                          queryKeys.getProfileKey(userToken)
+                        );
+                      }}
                       key={song.id}
                       id={song.id}
                       title={song.title}
@@ -110,8 +141,9 @@ const MainContent = ({ type }: pageType) => {
 };
 const Categories = () => {
   const navigate = useNavigate();
+  const search = useAppSelector((state) => state.music.searchTerm);
 
-  const { data, isLoading } = useGetGenres();
+  const { data, isLoading } = useGetGenres(search);
 
   const handleCardClick = (genre: genre) => {
     navigate(`/songs?category=${genre.id}`);
@@ -145,6 +177,7 @@ const Categories = () => {
                       <MusicCard
                         id={genre.id}
                         title={genre.name}
+                        imgSrc={genre.description}
                         author={''}
                         onCardClick={() => handleCardClick(genre)}
                       />
