@@ -6,7 +6,7 @@ import {
   handleSetLoginModalOpen,
   handleSetSignUpModalOpen,
 } from '../redux/actions/auth';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { environment } from '../environment/environment';
 import {
@@ -15,6 +15,7 @@ import {
 } from '../redux/slices/authSlice';
 import MusicPlayer from './musicPlayer';
 import { handleSearchTerm } from '../redux/actions/music';
+import { debounce } from 'lodash';
 
 const Header = () => {
   const loggedInUser = useAppSelector((state) => state.auth.loggedInUser);
@@ -90,19 +91,18 @@ const Header = () => {
       }
     }
   }, []);
-  const debounce = (func: (...args: any[]) => void, delay: number) => {
-    let timeoutId: number | undefined;
-    return (...args: any[]) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => func(...args), delay);
-    };
-  };
 
-  const searchTerm = (term: string) => {
-    dispatch(handleSearchTerm(term));
-  };
+  const debouncedHandleSearchTerm = useCallback(
+    debounce((term: string) => {
+      dispatch(handleSearchTerm(term));
+    }, 500),
+    [dispatch]
+  );
 
-  const debouncedHandleSearchTerm = debounce(searchTerm, 1500);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLocalSearchTerm(e.target.value);
+    debouncedHandleSearchTerm(e.target.value);
+  };
   const { t } = useTranslation();
   return (
     <>
@@ -116,10 +116,7 @@ const Header = () => {
             <span className='prediction'></span>
             <input
               value={localSearchTerm}
-              onChange={(e) => {
-                setLocalSearchTerm(e.target.value);
-                debouncedHandleSearchTerm(e.target.value);
-              }}
+              onChange={handleInputChange}
               className='search'
               autoComplete='off'
               type='text'

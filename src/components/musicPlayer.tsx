@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
 import '../css/musicPlayer.css';
@@ -24,7 +24,7 @@ const MusicPlayer: React.FC = () => {
       : playlist.indexOf(currentSong) - 1 >= 0
       ? playlist[playlist.indexOf(currentSong) - 1]
       : playlist[playlist.indexOf(currentSong) + 1];
- 
+
   return currentSong && playlist.length > 0 ? (
     <div className='music-player'>
       <AudioPlayer

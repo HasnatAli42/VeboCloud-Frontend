@@ -22,7 +22,6 @@ const UploadComponent: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [trackTitle, setTrackTitle] = useState('');
-  const [trackLink, setTrackLink] = useState('');
   const [genre, setGenre] = useState('');
   const [tags, setTags] = useState('');
   const [description, setDescription] = useState('');

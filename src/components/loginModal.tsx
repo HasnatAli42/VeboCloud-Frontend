@@ -332,16 +332,6 @@ const LoginModal = () => {
                   {loading ? 'Loading...' : t('SIGN_IN')}
                 </button>
               </div>
-              {!true && (
-                <div id='lightbox-footer-left' className='left mobile'>
-                  <button
-                    className='btn btn-secondary open-signup'
-                    data-translate-text='LB_SIGNUP_LOGIN_DONT_HAVE_ACCOUNT_SUB'
-                  >
-                    {t('LB_SIGNUP_LOGIN_DONT_HAVE_ACCOUNT_SUB')}
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         </div>

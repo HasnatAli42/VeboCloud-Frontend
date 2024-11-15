@@ -21,14 +21,9 @@ import axios from 'axios';
 import { environment } from '../environment/environment';
 import { useState } from 'react';
 import { faFacebook, faTwitter } from '@fortawesome/free-brands-svg-icons';
-import { useQueryClient } from 'react-query';
-import queryKeys from '../utils/queryKeys';
 
 const ArtistProfile = () => {
-  const userToken = useAppSelector(
-    (state) => state.auth.loggedInUser?.access_token
-  );
-  const queryClient = useQueryClient();
+ 
   const navigate = useNavigate();
   const search = useAppSelector((state) => state.music.searchTerm);
   const params = useParams();
