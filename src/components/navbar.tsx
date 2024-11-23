@@ -16,10 +16,12 @@ import {
 import MusicPlayer from './musicPlayer';
 import { handleSearchTerm } from '../redux/actions/music';
 import { debounce } from 'lodash';
+import { useGetProfile } from '../api/api';
 
 const Header = () => {
   const loggedInUser = useAppSelector((state) => state.auth.loggedInUser);
   const loggedInTime = useAppSelector((state) => state.auth.loggedInTime);
+  const { data: profile } = useGetProfile();
   const [isOpen, setIsOpen] = useState(false);
   const [localSearchTerm, setLocalSearchTerm] = useState('');
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -169,7 +171,7 @@ const Header = () => {
                 <button className='dropdown-button' onClick={toggleDropdown}>
                   <a id='profile-button'>
                     <img
-                      src={loggedInUser.image}
+                      src={profile?.image}
                       className='profile-img'
                       width='16'
                       height='16'
@@ -202,6 +204,15 @@ const Header = () => {
                     }}
                   >
                     Edit Profile
+                  </div>
+                  <div
+                    className='dropdown-item'
+                    onClick={() => {
+                      toggleDropdown();
+                      navigate('/membership');
+                    }}
+                  >
+                    Membership
                   </div>
                 </div>
               )}

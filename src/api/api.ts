@@ -56,9 +56,13 @@ export const useGetGenres = (search?: string) => {
 
 export const useGetProfile = () => {
   const accessToken = store.getState().auth.loggedInUser?.access_token;
+
   return useQuery(
     queryKeys.getProfileKey(accessToken),
     async () => {
+      if (!accessToken) {
+        return undefined;
+      }
       const resp = await axios.get(environment.VITE_BACKEND_URL + '/profile/', {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
