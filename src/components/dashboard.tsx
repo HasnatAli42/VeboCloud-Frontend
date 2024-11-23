@@ -126,7 +126,7 @@ const MainContent = ({ type }: pageType) => {
                       title={song.title}
                       author={song.artist?.bio || ''}
                       imgSrc={song.image || defaultSongImage}
-                      audioSrc={song.file}
+                      audioSrc={song.file_url}
                       onCardClick={() => handleCardClick(song)}
                     />
                   ))}
@@ -177,7 +177,7 @@ const Categories = () => {
                       <MusicCard
                         id={genre.id}
                         title={genre.name}
-                        imgSrc={genre.description}
+                        imgSrc={genre.image}
                         author={''}
                         onCardClick={() => handleCardClick(genre)}
                       />

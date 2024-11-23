@@ -146,7 +146,7 @@ const ArtistProfile = () => {
               <div className='track-download'>
                 <FontAwesomeIcon
                   icon={faDownload}
-                  onClick={() => FileDownload(track.file, track.title)}
+                  onClick={() => FileDownload(track.file_url, track.title)}
                 />
               </div>
               <div className='track-download'>

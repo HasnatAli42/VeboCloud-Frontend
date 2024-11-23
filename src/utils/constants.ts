@@ -53,13 +53,14 @@ export interface song {
     description: string;
   };
   upload_date: string;
-  file: string;
+  file_url: string;
   length: string;
 }
 
 export interface genre {
   id: number;
   name: string;
+  image: string;
   description: string;
 }
 

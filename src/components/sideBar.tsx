@@ -1,8 +1,10 @@
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useAppSelector } from '../hooks/storeHooks';
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const user = useAppSelector((state) => state.auth.loggedInUser);
   const getActiveClass = (pathname: string) =>
     pathname === location.pathname ||
     (location.pathname.includes(pathname) && pathname !== '/')
@@ -42,7 +44,7 @@ const Sidebar = () => {
           </li>
           <li
             className={getActiveClass('/profile/')}
-            onClick={() => navigate('/profile/1')}
+            onClick={() => navigate(`/profile/${user?.id}`)}
           >
             My Soundbytes
           </li>

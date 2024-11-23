@@ -59,7 +59,7 @@ const MusicPlayer: React.FC = () => {
         }
         autoPlay
         ref={playerRef}
-        src={currentSong.file}
+        src={currentSong.file_url}
         onEnded={() => dispatch(handleSetCurrentSong(nextSong))}
         onClickNext={() => dispatch(handleSetCurrentSong(nextSong))}
         onClickPrevious={() => dispatch(handleSetCurrentSong(previousSong))}
