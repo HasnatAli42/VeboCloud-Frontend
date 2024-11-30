@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faHeart } from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faPause, faHeart } from '@fortawesome/free-solid-svg-icons';
+import { useAppSelector } from '../hooks/storeHooks';
 
 interface CardProps {
   id: number;
@@ -26,7 +27,9 @@ const MusicCard: React.FC<CardProps> = ({
   onCardClick,
 }) => {
   const [liked, setLiked] = useState<boolean>(false);
-
+  const currentlyPlayingSong = useAppSelector(
+    (state) => state.music.currentSong
+  );
   useEffect(() => {
     const storedLiked = localStorage.getItem(`liked-${id}`);
     if (storedLiked === 'true') {
@@ -45,13 +48,25 @@ const MusicCard: React.FC<CardProps> = ({
 
   return (
     <div className={`card ${smallCard ? 'smallCard' : ''}`}>
-      <img src={imgSrc} alt={title} />
+      <img
+        src={imgSrc}
+        alt={title}
+        className={`${
+          audioSrc && currentlyPlayingSong?.file_url === audioSrc
+            ? 'opacity80'
+            : ''
+        }`}
+      />
       {audioSrc && (
         <>
           <FontAwesomeIcon
             onClick={() => onCardClick(audioSrc)}
-            icon={faPlay}
-            className='play-btn'
+            icon={
+              currentlyPlayingSong?.file_url === audioSrc ? faPause : faPlay
+            }
+            className={`play-btn ${
+              currentlyPlayingSong?.file_url === audioSrc ? 'opacity1' : ''
+            }`}
           />
           <FontAwesomeIcon
             icon={faHeart}

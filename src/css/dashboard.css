@@ -153,7 +153,12 @@ h2 {
   border-radius: 50%;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
-
+.opacity1 {
+  opacity: 1 !important;
+}
+.opacity80 {
+  opacity: 0.8 !important;
+}
 .card:hover .play-btn {
   opacity: 1;
 }

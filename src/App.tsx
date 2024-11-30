@@ -1,7 +1,8 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import './css/App.css';
 import './css/dropdown.css';
+import './css/membershipCards.css';
 import './css/dashboard.css';
 import './css/uploadMusic.css';
 import './css/audioUpload.css';
@@ -28,6 +29,7 @@ import MostPopularPage from './pages/mostPopular';
 import MusicCategoriesPage from './pages/categories';
 import ArtistProfilePage from './pages/artistProfile';
 import SongsPage from './pages/songs';
+import MembershipPage from './pages/membership';
 
 const queryClient = new QueryClient();
 
@@ -55,6 +57,7 @@ function AppWithRoutes() {
             <Route path='/upload' element={<UploadMusic />} />
             <Route path='/profile/:id' element={<ArtistProfilePage />} />
             <Route path='/editProfile' element={<Profile />} />
+            <Route path='/membership' element={<MembershipPage />} />
           </Routes>
         ) : (
           <Routes>
