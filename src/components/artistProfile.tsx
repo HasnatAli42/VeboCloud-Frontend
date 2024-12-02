@@ -58,8 +58,11 @@ const ArtistProfile = () => {
           : 1
         : followChange === 1
         ? 0
+        : followChange === -1
+        ? 0
         : 1
     );
+    setFollowingArtist(!followingArtist);
 
     await axios.post(
       `${environment.VITE_BACKEND_URL}/artists/${artist?.id}/follow/`,
