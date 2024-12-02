@@ -8,7 +8,7 @@ interface User {
     role_id: number;
   };
 }
-// added comment for deployment again, 2
+// added comment for deployment again, 2, 3
 const useAuth = () => {
   // const [user, setUser] = useState<User | null>(null);
   // const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
